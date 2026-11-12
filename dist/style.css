@@ -2,9 +2,9 @@
 @font-face { font-family: 'Source Code Pro'; font-style: normal; font-weight: 300; font-display: swap; src: url('SourceCodePro-300.woff') format('woff'); }
 :root {
   color-scheme: dark;
-  --bg: #050706;
-  --text: #bec5bd;
-  --muted: #a4aea2;
+  --bg: #000;
+  --text: #d5ddd3;
+  --muted: #b3beb0;
   --green: #80ef45;
   --bright: #b5ffa4;
   --phosphor: #99ff00;
@@ -194,3 +194,26 @@ nav a:hover, .intro-links a:hover { text-shadow: 0 0 12px var(--glow); }
 }
 @media (prefers-reduced-motion: reduce) { nav a, .intro-links a { transition: none; } }
 @media (prefers-contrast: more) { .brand, h1, .lead, nav a:hover, .intro-links a:hover { text-shadow: none; } }
+
+.profile-links, .footer-links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.profile-links a { display: inline-flex; align-items: center; min-height: 44px; }
+.footer-links .resume-document { color: var(--muted); }
+/* Wider gamut adds saturation; it does not itself increase HDR luminance. */
+@supports (color: color(display-p3 0 1 0)) {
+  @media (color-gamut: p3) {
+    body[data-theme=matrix] { --phosphor: color(display-p3 .6 1 0); }
+    body[data-theme=amber] { --phosphor: color(display-p3 1 .82 .47); }
+    body[data-theme=cyan] { --phosphor: color(display-p3 .44 .92 1); }
+    body[data-theme=violet] { --phosphor: color(display-p3 .81 .66 1); }
+    body[data-theme=rose] { --phosphor: color(display-p3 1 .64 .79); }
+  }
+}
+/* Experimental HDR text activates only when both syntax and output support it. */
+@supports (color: color-mix(in rec2100-linear, red, color(rec2100-linear 2 2 2))) {
+  @media (dynamic-range: high) and (prefers-contrast: no-preference) {
+    .brand, h1, .lead {
+      color: color-mix(in rec2100-linear, var(--phosphor) 80%, color(rec2100-linear 2 2 2));
+      dynamic-range-limit: no-limit;
+    }
+  }
+}

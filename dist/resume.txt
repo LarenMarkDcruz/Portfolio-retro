@@ -12,6 +12,7 @@ Professional Experience
 
 Cisco Systems Canada Co. – Splunk (remote) 	Vancouver, BC
 Site Reliability Engineer - Software Developer	June 2025 - Present
+Work with Kubernetes and Go in a DevOps-focused site reliability role.
 Own Python backend development and API integration for the Splunk Enterprise Security Health App, automating upgrade validation and delivering updates across active release lines.
 Designed Claude and Codex skills for Health App test automation, saving 2 hours of testing time and streamlining developer workflows.
 Develop and refine Claude and Codex debugging skills, incorporating new bug findings and diagnostic steps to accelerate issue investigation and enhancements.

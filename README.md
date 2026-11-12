@@ -32,10 +32,29 @@ Open http://localhost:8000. Stop the server with Ctrl+C.
 - `dist/resume.txt`: downloadable résumé.
 - `dist/SourceCodePro-*`: locally hosted fonts. Their license is in `FONT-LICENSE.txt`.
 
-## Hosting
+## Free hosting with GitHub Pages
 
-The `dist` folder can be deployed to a static host such as GitHub Pages, Cloudflare Pages, or Netlify. This repository does not configure automatic deployment. GitHub pushes do not automatically update the existing private Sites publication.
+The workflow in `.github/workflows/deploy_pages.yml` publishes only `dist/`. GitHub Pages is free for public repositories.
 
-For GitHub Pages, use a Pages deployment workflow that uploads `dist` as its artifact. A project site is normally served under `/Portfolio-retro/`; the site uses relative asset URLs suitable for that path.
+1. Open https://github.com/LarenMarkDcruz/Portfolio-retro/settings/pages.
+2. Under **Build and deployment**, choose **GitHub Actions** as the source. Enable repository Actions if GitHub asks.
+3. Open **Actions → Publish portfolio → Run workflow**, choose `main`, and run it.
+4. After the workflow succeeds, open https://larenmarkdcruz.github.io/Portfolio-retro/. Settings → Pages shows the confirmed address.
 
-The current Sites publication is https://terminal-portfolio-lab.larenmark.chatgpt.site and remains private. Its hosting identity and credentials are not included in this repository.
+Future updates: edit files in `dist/`, preview locally, commit, and push to `main`. The workflow automatically publishes changes to `dist/`. A failed deployment appears under Actions; the workflow must succeed before changes go live.
+
+```text
+Edit → Preview → Commit + push → GitHub Actions → Public website
+```
+
+This publishes the GitHub copy separately from the existing Sites publication. No deployment credentials belong in this repository.
+
+## Display brightness
+
+The site uses a black background, brighter readable text, and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
+
+An experimental CSS HDR enhancement brightens the name, role, and brand only when the browser supports Rec. 2100 linear colors and reports a high dynamic range display. Other browsers use normal colors. Actual HDR output depends on the browser, operating system, display, and its settings; local browser checks cannot verify physical luminance.
+
+## Résumé link
+
+The Google Docs résumé appears quietly in the footer. To make it accessible to visitors, set that document's General access to **Anyone with the link → Viewer**. A subtle link is still public, not access control. The existing résumé tab and text download remain available.
