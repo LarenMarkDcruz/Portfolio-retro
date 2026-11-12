@@ -211,9 +211,70 @@ nav a:hover, .intro-links a:hover { text-shadow: 0 0 12px var(--glow); }
 /* Experimental HDR text activates only when both syntax and output support it. */
 @supports (color: color-mix(in rec2100-linear, red, color(rec2100-linear 2 2 2))) {
   @media (dynamic-range: high) and (prefers-contrast: no-preference) {
-    .brand, h1, .lead {
+    body[data-appearance=dark] :is(.brand, h1, .lead) {
       color: color-mix(in rec2100-linear, var(--phosphor) 80%, color(rec2100-linear 2 2 2));
       dynamic-range-limit: no-limit;
     }
   }
+}
+
+/* The terminal fills the window; reading columns constrain prose, not the canvas. */
+.shell { max-width: none; padding: 26px clamp(20px, 2.5vw, 48px) 20px; }
+body { font-size: 20px; background-image: linear-gradient(color-mix(in srgb, var(--line) 18%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--line) 18%, transparent) 1px, transparent 1px); background-size: 64px 64px; }
+header { padding-bottom: 4px; }
+.brand { font-size: 28px; font-weight: 500; letter-spacing: -.8px; text-shadow: 0 0 5px var(--glow), 0 0 20px var(--glow); }
+.display-controls { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; }
+.appearance-picker { width: 178px; max-width: 100%; }
+#appearance { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 0; padding: 0 9px; background: var(--bg); color: var(--green); font: 300 16px 'Source Code Pro', monospace; }
+#appearance:focus-visible { outline: 1px dashed var(--green); outline-offset: 4px; }
+#theme { font-size: 16px; }
+nav { gap: 6px 28px; }
+nav a { font-size: 19px; }
+.intro { column-gap: clamp(32px, 4vw, 72px); padding-block: 36px 12px; }
+h1 { font-size: clamp(42px, 4.2vw, 64px); font-weight: 500; text-shadow: 0 0 5px var(--glow), 0 0 24px var(--glow); }
+.lead { font-size: clamp(20px, 1.5vw, 24px); font-weight: 500; line-height: 1.65; text-shadow: 0 0 5px var(--glow), 0 0 18px var(--glow); }
+.intro-details .intro-note { font-size: 21px; max-width: 65ch; }
+.intro-links, .skills-list, .project-body, .project-desc, .resume-entry, .earlier-experience, .section-note, #resume > a, #contact > p { font-size: 19px; }
+.draft, .filters, .terminal { font-size: 17px; }
+h2 { font-size: 28px; font-weight: 500; }
+h3 { font-size: 21px; font-weight: 500; }
+.skills-list > div { grid-template-columns: minmax(180px, 20%) minmax(0, 1fr); }
+.resume-entry { max-width: 110ch; }
+body[data-appearance=light] { color-scheme: light; --bg: #f5f3e9; --text: #202b25; --muted: #4b5a50; --line: #c7cec1; }
+body[data-appearance=light][data-theme=matrix] { --green: #235e16; --phosphor: #245c12; --bright: #123d0a; --dim: #47643c; --glow: #4a8a282b; }
+body[data-appearance=light][data-theme=amber] { --green: #80500b; --phosphor: #754400; --bright: #593000; --dim: #715c37; --glow: #b278242b; }
+body[data-appearance=light][data-theme=cyan] { --green: #08616f; --phosphor: #005869; --bright: #003e4c; --dim: #3d6268; --glow: #16869a2b; }
+body[data-appearance=light][data-theme=violet] { --green: #68418b; --phosphor: #603185; --bright: #451567; --dim: #665775; --glow: #9166b82b; }
+body[data-appearance=light][data-theme=rose] { --green: #93405f; --phosphor: #872c51; --bright: #661335; --dim: #795563; --glow: #bc5e832b; }
+@media (max-width: 900px) {
+  .intro { padding-top: 28px; }
+  .intro-details .intro-note { max-width: 70ch; }
+  .skills-list > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}
+@media (max-width: 600px) {
+  .shell { padding: 20px max(18px, env(safe-area-inset-right)) 20px max(18px, env(safe-area-inset-left)); }
+  body { font-size: 18px; }
+  .display-controls { width: 100%; }
+  .appearance-picker, .theme-picker { flex: 1; width: auto; min-width: 0; }
+  nav { gap: 4px 12px; }
+  nav a { font-size: 16px; }
+  h1 { font-size: clamp(36px, 9.5vw, 54px); }
+  .lead { font-size: 20px; }
+  .intro-details .intro-note { font-size: 19px; }
+  .intro-links, .skills-list, .project-body, .project-desc, .resume-entry, .earlier-experience, .section-note, #resume > a, #contact > p { font-size: 18px; }
+  h2 { font-size: 23px; }
+  h3 { font-size: 19px; }
+}
+@media (prefers-contrast: more) { .brand, h1, .lead, h2, h3 { text-shadow: none; } body { background-image: none; } }
+
+/* Tight phosphor halos preserve the letter shapes at every display brightness. */
+body[data-appearance=dark] :is(.brand, h1) {
+  color: var(--green);
+  text-shadow: 0 0 2px var(--green), 0 0 5px var(--glow), 0 0 12px var(--glow);
+}
+body[data-appearance=dark] .lead {
+  text-shadow: 0 0 2px var(--glow), 0 0 5px var(--glow);
+}
+@media (prefers-contrast: more) {
+  body[data-appearance=dark] :is(.brand, h1, .lead) { text-shadow: none; }
 }

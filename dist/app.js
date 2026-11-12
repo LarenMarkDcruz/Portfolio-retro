@@ -90,10 +90,32 @@ document.querySelector('#terminal-form').addEventListener('submit', event => {
   let message;
   if (destination) { navigate(destination, { scroll: true }); message = `Opening /${destination}…`; }
   else if (command === 'help') message = 'Commands: home, work, skills, resume, contact, ls, whoami, clear.\nYou can also use cd work (or another section).';
-  else if (command === 'ls') message = 'home/  work/  skills/  resume/  contact/';
+  else if (command === 'ls') message = 'home/  skills/  resume/  work/  contact/';
   else if (command === 'whoami') message = 'Laren Mark D’Cruz — Software Engineer & Site Reliability Engineer. Currently at Cisco/Splunk. Building websites in Victoria, BC.';
   else message = `Command not found: ${command}. Type help to see available commands.`;
   entry.textContent = `$ ${command}\n${message}`;
   output.append(entry);
   while (output.children.length > 6) output.firstElementChild.remove();
 });
+
+/** Apply and remember the selected terminal appearance. @returns {void} */
+function initializeAppearancePicker() {
+  const appearancePicker = document.querySelector('#appearance');
+  const appearanceStorageKey = 'portfolio-display-appearance';
+  try {
+    const savedAppearance = localStorage.getItem(appearanceStorageKey);
+    document.body.dataset.appearance = savedAppearance === 'light' ? 'light' : 'dark';
+  } catch (storageError) {
+    console.warn('Appearance preference could not be read', { storageError });
+  }
+  appearancePicker.value = document.body.dataset.appearance;
+  appearancePicker.addEventListener('change', () => {
+    document.body.dataset.appearance = appearancePicker.value;
+    try {
+      localStorage.setItem(appearanceStorageKey, appearancePicker.value);
+    } catch (storageError) {
+      console.warn('Appearance preference could not be saved', { storageError });
+    }
+  });
+}
+initializeAppearancePicker();

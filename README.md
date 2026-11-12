@@ -51,7 +51,7 @@ This publishes the GitHub copy separately from the existing Sites publication. N
 
 ## Display brightness
 
-The site uses a black background, brighter readable text, and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
+The site offers dark and warm-white terminal modes, with a separate five-color accent picker. Both preferences are remembered locally. A full-width grid canvas, medium-weight headings, and larger body text keep the retro layout readable. Dark mode uses a black background and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
 
 An experimental CSS HDR enhancement brightens the name, role, and brand only when the browser supports Rec. 2100 linear colors and reports a high dynamic range display. Other browsers use normal colors. Actual HDR output depends on the browser, operating system, display, and its settings; local browser checks cannot verify physical luminance.
 
