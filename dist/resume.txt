@@ -1,0 +1,67 @@
+LAREN MARK D’CRUZ - Software Engineer
+Victoria, British Columbia
+larenmark@gmail.com
+
+
+Summary
+
+Full-stack software developer specializing in Python and Java backend services, API integration, and React/TypeScript applications. Experience at Cisco/Splunk, Skip, and EPAM supporting Google, spanning cloud infrastructure, GitLab CI/CD, and production reliability. Builds reusable Claude and Codex skills to improve developer workflows, automate testing, and support debugging; brings end-to-end ownership from implementation to production support.
+
+Professional Experience
+
+
+Cisco Systems Canada Co. – Splunk (remote) 	Vancouver, BC
+Site Reliability Engineer - Software Developer	June 2025 - Present
+Own Python backend development and API integration for the Splunk Enterprise Security Health App, automating upgrade validation and delivering updates across active release lines.
+Designed Claude and Codex skills for Health App test automation, saving 2 hours of testing time and streamlining developer workflows.
+Develop and refine Claude and Codex debugging skills, incorporating new bug findings and diagnostic steps to accelerate issue investigation and enhancements.
+Remediated security vulnerabilities and backported fixes across release branches to protect customers using older versions.
+Extend ArgoUI and Puppet infrastructure checks and installation before Health App activation; use mtail to extract log-derived metrics for observability.
+Maintained and patched TruStar services using SaltStack, then completed service deprecation and retirement.
+Integrated backend infrastructure details into Slack notifications and GitLab CI jobs, reporting operational insights to improve engineering visibility.
+Resolved pre- and post-check pipeline failures blocking customer upgrades; optimize GitLab CI/CD jobs, security scans, and runners to improve release reliability.
+Perform root-cause analysis of production incidents, including race conditions and infrastructure failures; debug backend code and logs, fix issues within team ownership, and escalate to the relevant team to minimize upgrade downtime.
+Received an Outstanding Achievement Award from a Cisco/Splunk Vice President for Health App ownership, security remediation, and release-pipeline recovery.
+
+Skip	Toronto, ON
+Software Developer (remote)	November 2022 - September 2024
+Developed Java and Python microservices and REST APIs using Onion Architecture, improving service performance by 15%.
+Built responsive React and TypeScript interfaces for restaurant services and integrated Keycloak authentication and access control.
+Managed MySQL and AWS services, including SQS, SNS, ECS, EC2, RDS, and Lambda; maintained Jenkins CI/CD and Terraform infrastructure.
+Strengthened service quality through JUnit tests, code reviews, and production monitoring with Datadog, Grafana, and Logz.io.
+
+EPAM SYSTEMS Inc.	Waterloo, ON
+Software Engineer @ Google (remote)	January 2021 - October 2022
+Built full-stack internal tools with React, JavaScript, and Google Apps Script, improving team productivity by 50%.
+Delivered Java/Python bug fixes and feature enhancements for Google Play Store services supporting approximately 26 international regions.
+Investigated application crashes, reviewed code, and deployed fixes in collaboration with Google software, SRE, and developer relations teams.
+
+PENTAGEER DESIGN SOLUTIONS	Edmonton, AB
+Android Developer (internship - remote)	July 2020 - December 2020
+Independently ported desktop software to an Android application in Java within a 4-person team, integrating Bluetooth LE and Wi-Fi connectivity.
+Integrated TensorFlow Lite and collaborated with computer vision engineers on AI inference processing for a solution achieving 90%+ object-detection accuracy.
+
+
+CONESTOGA APPLIED RESEARCH AND INNOVATION / GREENTEC	Cambridge, ON
+Research Assistant in Computer Vision (part time)	January 2020 - April 2020 
+Adapted Mask R-CNN image-segmentation models using Keras and TensorFlow; built a Python/OpenCV data-labeling tool after evaluating 10+ alternatives.
+
+SAFEGROUND.AI	Waterloo, ON
+Data Analyst/Engineer Intern	December 2019- January 2020
+Built PostgreSQL queries and analyzed geospatial data in QGIS to inform product strategy and MVP development.
+
+AMAZON, Inc.	Chennai, India 
+Data Associate	October 2018 - December 2018
+Resolved 800+ data-quality issues in datasets used to develop, test, and train Amazon Alexa natural language processing (NLP) models.
+Analyzed data trends and introduced 2 processes to improve internal support workflows.
+
+Education
+
+
+Conestoga College	Waterloo, Ontario
+PG Diploma in Computer Application Development and Big Data	Jan 2019 - April 2020
+Amrita University	Coimbatore, India
+Master in Computer Science	July 2016 - March 2018
+Co-authored a published research paper on "Optimizing Load Balancing of Virtual Machines" using Dijkstra's algorithm to enhance efficiency and reduce downtime  (ISSN: 1314-3395)
+M.G. University	Kottayam, India
+Bachelor of Computer Science	July  2013 - March  2016
