@@ -26,6 +26,7 @@ Received an Outstanding Achievement Award from a Cisco/Splunk Vice President for
 
 Skip	Toronto, ON
 Software Developer (remote)	November 2022 - September 2024
+Automated courier scheduling workflows as part of the couriers’ scheduling team.
 Developed Java and Python microservices and REST APIs using Onion Architecture, improving service performance by 15%.
 Built responsive React and TypeScript interfaces for restaurant services and integrated Keycloak authentication and access control.
 Managed MySQL and AWS services, including SQS, SNS, ECS, EC2, RDS, and Lambda; maintained Jenkins CI/CD and Terraform infrastructure.
@@ -33,6 +34,7 @@ Strengthened service quality through JUnit tests, code reviews, and production m
 
 EPAM SYSTEMS Inc.	Waterloo, ON
 Software Engineer @ Google (remote)	January 2021 - October 2022
+Worked across teams to publish an exposure notification app for public use.
 Built full-stack internal tools with React, JavaScript, and Google Apps Script, improving team productivity by 50%.
 Delivered Java/Python bug fixes and feature enhancements for Google Play Store services supporting approximately 26 international regions.
 Investigated application crashes, reviewed code, and deployed fixes in collaboration with Google software, SRE, and developer relations teams.
@@ -58,11 +60,5 @@ Analyzed data trends and introduced 2 processes to improve internal support work
 
 Education
 
-
-Conestoga College	Waterloo, Ontario
-PG Diploma in Computer Application Development and Big Data	Jan 2019 - April 2020
-Amrita University	Coimbatore, India
-Master in Computer Science	July 2016 - March 2018
-Co-authored a published research paper on "Optimizing Load Balancing of Virtual Machines" using Dijkstra's algorithm to enhance efficiency and reduce downtime  (ISSN: 1314-3395)
-M.G. University	Kottayam, India
-Bachelor of Computer Science	July  2013 - March  2016
+Master’s in Computer Science	2016–2018
+Bachelor’s in Computer Science	2013–2016
