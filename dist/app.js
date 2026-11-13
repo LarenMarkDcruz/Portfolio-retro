@@ -1,6 +1,7 @@
 import { initializeTerminal } from './terminal.js';
 import { renderFocusLine, selectFocusLine } from './focus_lines.js';
 import { createIntroTyping } from './intro_typing.js?v=cursor-at-end';
+import { initializeAsciiSculpture } from './ascii_sculpture.js';
 
 const playIntroTyping = createIntroTyping(document.querySelector('#home'));
 
@@ -112,3 +113,4 @@ function initializeAppearancePicker() {
 initializeAppearancePicker();
 
 initializeTerminal({ navigate, themes });
+initializeAsciiSculpture({ artwork: document.querySelector('#ascii-sculpture'), button: document.querySelector('#sculpture-motion') });
