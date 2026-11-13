@@ -39,6 +39,7 @@ tabs.forEach((tab, index) => {
   panels[index].setAttribute('tabindex', '0');
 });
 function showTab(id, { focus = false, scroll = false } = {}) {
+  if (id === 'contact') id = 'beyond';
   const selected = tabs.findIndex(tab => tab.hash === '#' + id);
   const activeIndex = selected < 0 ? 0 : selected;
   tabs.forEach((tab, index) => {
@@ -56,6 +57,7 @@ function showTab(id, { focus = false, scroll = false } = {}) {
   playIntroTyping();
 }
 function navigate(id, options = {}) {
+  if (id === 'contact') id = 'beyond';
   if (!panels.some(panel => panel.id === id)) return;
   if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
   showTab(id, options);

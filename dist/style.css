@@ -94,7 +94,7 @@ h3 { color: var(--text); font-size: 17px; font-weight: 400; margin: 6px 0; }
 .earlier-experience .project-body { margin-left: 16px; }
 .education p { margin: 16px 0; }
 #resume > a { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; }
-#contact > p { font-size: 17px; max-width: 55ch; }
+#beyond > p { font-size: 17px; max-width: 55ch; }
 .email { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; color: var(--phosphor); text-shadow: 0 0 12px var(--glow); }
 .terminal { margin: 12px 0 28px; border-top: 1px solid var(--line); padding-top: 8px; font-size: 15px; }
 .terminal > summary { display: flex; align-items: center; color: var(--muted); }
@@ -234,7 +234,7 @@ nav a { font-size: 19px; }
 h1 { font-size: clamp(42px, 4.2vw, 64px); font-weight: 500; text-shadow: 0 0 5px var(--glow), 0 0 24px var(--glow); }
 .lead { font-size: clamp(20px, 1.5vw, 24px); font-weight: 500; line-height: 1.65; text-shadow: 0 0 5px var(--glow), 0 0 18px var(--glow); }
 .intro-details .intro-note { font-size: 21px; max-width: 65ch; }
-.intro-links, .skills-list, .project-body, .project-desc, .resume-entry, .earlier-experience, .section-note, #resume > a, #contact > p { font-size: 19px; }
+.intro-links, .skills-list, .project-body, .project-desc, .resume-entry, .earlier-experience, .section-note, #resume > a, #beyond > p { font-size: 19px; }
 .draft, .filters, .terminal { font-size: 17px; }
 h2 { font-size: 28px; font-weight: 500; }
 h3 { font-size: 21px; font-weight: 500; }
@@ -261,7 +261,7 @@ body[data-appearance=light][data-theme=rose] { --green: #93405f; --phosphor: #87
   h1 { font-size: clamp(36px, 9.5vw, 54px); }
   .lead { font-size: 20px; }
   .intro-details .intro-note { font-size: 19px; }
-  .intro-links, .skills-list, .project-body, .project-desc, .resume-entry, .earlier-experience, .section-note, #resume > a, #contact > p { font-size: 18px; }
+  .intro-links, .skills-list, .project-body, .project-desc, .resume-entry, .earlier-experience, .section-note, #resume > a, #beyond > p { font-size: 18px; }
   h2 { font-size: 23px; }
   h3 { font-size: 19px; }
 }
@@ -362,3 +362,11 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 @media (prefers-contrast: more) {
   .skills-list dt, .section-heading > span, .resume-entry h3, .resume-entry > .accent, .project-title, .section-heading h2, .terminal form:focus-within label { text-shadow: none; }
 }
+
+.interests-list { max-width: 80ch; padding-left: 1.4em; font-size: 19px; }
+.interests-list li { padding-left: 8px; margin-bottom: 20px; }
+.interests-list li::marker { color: var(--green); }
+.interest-title { display: block; color: var(--bright); font-weight: 500; text-shadow: 0 0 5px var(--glow); }
+.interests-list a { display: inline-block; min-height: 44px; align-content: center; }
+@media (max-width: 600px) { .interests-list { font-size: 18px; } }
+@media (prefers-contrast: more) { .interest-title { text-shadow: none; } }

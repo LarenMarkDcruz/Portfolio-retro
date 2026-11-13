@@ -1,4 +1,4 @@
-const SECTION_NAMES = ['home', 'skills', 'resume', 'work', 'contact'];
+const SECTION_NAMES = ['home', 'skills', 'resume', 'work', 'beyond'];
 const COMMAND_NAMES = ['help', '/help', 'ls', 'pwd', 'cd', 'open', 'theme', 'mode', 'bg', 'background', 'fg', 'foreground', 'accent', 'font', 'reset', 'history', 'whoami', 'clear'];
 const MAXIMUM_HISTORY_ENTRIES = 100;
 const COLOR_STORAGE_KEY = 'portfolio-terminal-colors';
@@ -62,13 +62,15 @@ function resetCustomAppearance(state) {
 
 const COMMAND_HELP_LINES = Object.freeze([
     'EXPLORE THE WEBSITE',
-    'ls                     list home, skills, resume, work, contact',
+    'ls                     list home, skills, resume, work, beyond',
     'cd skills / open work  visit a section (filenames also work)',
     'cd .. / cd home        return home',
     'pwd                    show the current section',
     'open github            open my GitHub profile',
     'open linkedin          open my LinkedIn profile',
     'open resume            open the Google Docs résumé',
+    'open youtube           listen to my songs on YouTube',
+    'cd beyond              hobbies and contact (alias: cd contact)',
     'Work: filter projects and select a filename for its notes.',
     'Résumé: expand earlier experience or view the linked document.',
     'Tabs and theme pickers also work with mouse or keyboard.',
@@ -116,12 +118,13 @@ function changeDisplaySelection({ selector, value, choices }) {
 function resolveSection(destination) {
   const normalized = destination.replace(/^~?\//, '').replace(/\/$/, '').replace(/\.(cpp|hpp|md)$/, '');
   if (['', '~', '..', 'main'].includes(normalized)) return 'home';
+  if (normalized === 'contact') return 'beyond';
   return normalized === 'projects' ? 'work' : normalized;
 }
 
 /** Navigate within the site or open a supplied profile. @param {object} request @returns {string} */
 function openDestination({ command, destination, navigate }) {
-  const externalLinks = { github: '#home a[href*="github.com"]', linkedin: '#home a[href*="linkedin.com"]', resume: '#resume a[href*="docs.google.com"]' };
+  const externalLinks = { github: '#home a[href*="github.com"]', linkedin: '#home a[href*="linkedin.com"]', resume: '#resume a[href*="docs.google.com"]', youtube: '#beyond a[href*="youtube.com"]' };
   if (command === 'open' && externalLinks[destination]) {
     const link = document.querySelector(externalLinks[destination]);
     const openedWindow = window.open(link.href, '_blank');
@@ -167,7 +170,7 @@ function executeCommand({ line, state, dependencies }) {
 /** Complete known commands and their supported arguments. @param {object} context @returns {void} */
 function completeInput({ input, output, themes }) {
   const words = input.value.toLowerCase().split(/\s+/);
-  const argumentChoices = { cd: SECTION_NAMES, open: [...SECTION_NAMES, 'github', 'linkedin'], theme: themes, mode: ['dark', 'navy', 'light'], font: Object.keys(FONT_CHOICES) };
+  const argumentChoices = { cd: SECTION_NAMES, open: [...SECTION_NAMES, 'github', 'linkedin', 'youtube'], theme: themes, mode: ['dark', 'navy', 'light'], font: Object.keys(FONT_CHOICES) };
   const choices = words.length === 1 ? COMMAND_NAMES : argumentChoices[words[0]] || [];
   const matches = choices.filter(choice => choice.startsWith(words.at(-1)));
   if (matches.length === 1) { words[words.length - 1] = matches[0]; input.value = words.join(' '); }
