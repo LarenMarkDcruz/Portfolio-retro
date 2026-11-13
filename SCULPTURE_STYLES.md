@@ -2,7 +2,7 @@
 
 When Laren asks about available ASCII styles, show this catalogue and distinguish **active** from **archived**. Codex and Claude sessions in this repository should read this file before discussing or replacing styles. Do not reactivate archived styles unless requested.
 
-**Active: Classic fusion.** It is the only live style; the dropdown has been removed. Each load and random reset generates a new seed and starting pose. Two hollow curved bodies align into one rotating rounded or oval loop, stay joined for a random duration, separate, and linger apart. Their central tunnels remain carved through the merged surface. The opening naturally narrows when viewed edge-on. Transitions ease smoothly; motion varies smoothly between 1.96875× and 2.625×.
+**Active: Classic fusion.** It is the only live style; the dropdown has been removed. Each load and random reset generates a new seed and starting pose. Two hollow curved bodies align into one rotating rounded or oval loop, stay joined for a random duration, separate, and linger apart. Their central tunnels remain carved through the merged surface. Chunky, body-attached ASCII grain and directional highlights/contact shadows give the surfaces visible depth. The opening naturally narrows when viewed edge-on. Transitions ease smoothly; motion varies smoothly between 1.96875× and 2.625×.
 
 **Archived: the sixteen reference-inspired families below.** Their renderers live in `archive/ascii_style_library/`, and the selectable website version remains in commit `9b889b7`. They are retained for future restoration, not loaded by the live website.
 
@@ -30,7 +30,7 @@ The sixteen families interpret the supplied 4×4 reference; they are procedural 
 
 ## Rendering choices
 
-- Resolution: 160 columns on desktop; 128 on narrow sculpture windows. Fixed camera; oversized forms crop at the rectangle edges.
+- Resolution: 136 columns on desktop; 112 on narrow sculpture windows. Fixed camera; oversized forms crop at the rectangle edges.
 - Curves: the active renderer uses two smoothly fused, warped surfaces. The archived families include ribbons, orbital tubes, spirals, and geometric forms.
 - Animation: target up to 120 FPS through `requestAnimationFrame`. Display refresh rate, browser scheduling, and rendering cost determine actual FPS. Motion speed remains independent of FPS.
 - Accessibility: pause, random reset, and reduced-motion support remain available. There is no style dropdown.

@@ -406,7 +406,7 @@ body[data-appearance=navy] { --bg: #0f0f23; }
   margin: 0;
   overflow: hidden;
   color: var(--green);
-  font: 500 calc(100cqw / var(--sculpture-columns, 160) / .6)/1.08 'Source Code Pro', monospace;
+  font: 500 calc(100cqw / var(--sculpture-columns, 136) / .6)/1.08 'Source Code Pro', monospace;
   white-space: pre;
   text-shadow: none;
 }
@@ -442,12 +442,12 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 .sculpture-tone-3 { color: var(--green); }
 .sculpture-tone-4 { color: var(--bright); }
 .sculpture-tone-5 { color: color-mix(in srgb, var(--green) 40%, var(--bright)); }
-.sculpture-tone-6 { color: color-mix(in srgb, var(--bright) 85%, white); text-shadow: 0 0 var(--sculpture-glow, 2px) var(--glow); }
+.sculpture-tone-6 { color: color-mix(in srgb, var(--bright) 25%, white); text-shadow: 0 0 var(--sculpture-glow, 2px) var(--glow); }
 body[data-appearance=light] .sculpture-tone-5, body[data-appearance=light] .sculpture-tone-6 { color: var(--bright); text-shadow: none; }
 @media (prefers-contrast: more) { .sculpture-tone { color: var(--text); text-shadow: none; } }
 
 
-#ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-0 { color: color-mix(in srgb, var(--bg) 72%, var(--green)); }
-#ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-1 { color: color-mix(in srgb, var(--bg) 50%, var(--green)); }
+#ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-0 { color: color-mix(in srgb, var(--bg) 78%, var(--green)); }
+#ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-1 { color: color-mix(in srgb, var(--bg) 52%, var(--green)); }
 #ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-2 { color: color-mix(in srgb, var(--bg) 22%, var(--green)); }
 @media (prefers-contrast: more) { #ascii-sculpture .sculpture-tone { color: var(--text); text-shadow: none; } }

@@ -159,10 +159,24 @@ export function sampleSculptureDistance(point, scene) {
   return Math.max(surface, -cavity);
 }
 
-/** Calculate normals on the fused surface, including the connecting neck.
+/** Blend local material coordinates across the joint so the grain follows rotation.
  * @param {number[]} point
  * @param {object} scene
- * @returns {{point: number[], normal: number[]}}
+ * @returns {number[]}
+ */
+function sampleMaterialCoordinates(point, scene) {
+  const first = sampleBodyFields(point, scene.bodies[0]);
+  const second = sampleBodyFields(point, scene.bodies[1]);
+  const weight = Math.min(1, Math.max(0, 0.5 + (second.surface - first.surface) / scene.blendRadius));
+  const firstCoordinates = transformToBodyCoordinates(point, scene.bodies[0]);
+  const secondCoordinates = transformToBodyCoordinates(point, scene.bodies[1]);
+  return firstCoordinates.map((coordinate, index) => coordinate * weight + secondCoordinates[index] * (1 - weight));
+}
+
+/** Calculate normals and body-attached grain coordinates on the fused surface.
+ * @param {number[]} point
+ * @param {object} scene
+ * @returns {{point: number[], normal: number[], materialPoint: number[]}}
  */
 export function sampleSculptureSurface(point, scene) {
   const normal = point.map((coordinate, index) => {
@@ -173,5 +187,6 @@ export function sampleSculptureSurface(point, scene) {
     return sampleSculptureDistance(after, scene) - sampleSculptureDistance(before, scene);
   });
   const length = Math.hypot(...normal) || 1;
-  return { point, normal: normal.map(coordinate => coordinate / length) };
+  return { point, normal: normal.map(coordinate => coordinate / length),
+    materialPoint: sampleMaterialCoordinates(point, scene) };
 }

@@ -1,13 +1,13 @@
-import { createSculptureScene } from './sculpture_surfaces.js?v=hollow-fusion';
-import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=hollow-fusion';
+import { createSculptureScene } from './sculpture_surfaces.js?v=carved-texture';
+import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=carved-texture';
+import { sampleSculptureMaterial } from './sculpture_material.js?v=carved-texture';
 
-
-const FRAME_COLUMNS = 160;
-const FRAME_ROWS = 96;
+const FRAME_COLUMNS = 136;
+const FRAME_ROWS = 80;
 /** Frame-rate ceiling; requestAnimationFrame follows the actual display refresh rate. */
 export const SCULPTURE_TARGET_FRAMES_PER_SECOND = 120;
 const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / SCULPTURE_TARGET_FRAMES_PER_SECOND;
-const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!', 'i|()[]', 'tszvcr', '2345XY', 'GKZB8M', 'W%#@']);
+const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!_', 'i|()[]{}', 'tszvcr7', '2345XYK', 'G8MBW%', 'W%#@M8']);
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 const VIEW_HALF_WIDTH = 2.5;
 const CHARACTER_WIDTH_TO_FONT_SIZE_RATIO = 0.6;
@@ -15,7 +15,7 @@ const CHARACTER_LINE_HEIGHT = 1.08;
 const DEFAULT_VIEWPORT = Object.freeze({ columns: FRAME_COLUMNS, rows: FRAME_ROWS, halfWidth: VIEW_HALF_WIDTH,
   halfHeight: VIEW_HALF_WIDTH * FRAME_ROWS * CHARACTER_LINE_HEIGHT /
     (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) });
-const HIGHLIGHT_GLOW_IN_PIXELS = 3.375;
+const HIGHLIGHT_GLOW_IN_PIXELS = 2.4;
 const MINIMUM_MOTION_SPEED_MULTIPLIER = 1.96875;
 const MAXIMUM_MOTION_SPEED_MULTIPLIER = 2.625;
 
@@ -35,7 +35,7 @@ export function calculateSculptureMotionSpeed({ time, variation }) {
  * @returns {{columns: number, rows: number, halfWidth: number, halfHeight: number}}
  */
 export function createSculptureViewport({ width, height }) {
-  const columns = width < 440 ? 128 : FRAME_COLUMNS;
+  const columns = width < 440 ? 112 : FRAME_COLUMNS;
   const characterHeight = width / columns / CHARACTER_WIDTH_TO_FONT_SIZE_RATIO * CHARACTER_LINE_HEIGHT;
   const rows = Math.max(1, Math.ceil(height / characterHeight));
   return { columns, rows, halfWidth: VIEW_HALF_WIDTH,
@@ -49,13 +49,14 @@ export function createSculptureViewport({ width, height }) {
  * @returns {void}
  */
 function writeSurfaceCharacter({ surface, scene, position }, frame) {
-  const tone = Math.min(SHADE_GROUPS.length - 1,
-    Math.floor(calculateSurfaceLight(surface, scene) * SHADE_GROUPS.length));
-  const group = SHADE_GROUPS[tone];
-  const [horizontal, vertical, depth] = surface.point;
-  const texture = Math.abs(Math.sin(horizontal * 127 + vertical * 311 + depth * 73));
+  const material = sampleSculptureMaterial(surface.materialPoint);
+  const light = calculateSurfaceLight(surface, scene);
+  const tone = Math.min(SHADE_GROUPS.length - 1, Math.floor(light * SHADE_GROUPS.length));
+  const density = Math.min(SHADE_GROUPS.length - 1,
+    Math.max(0, Math.floor((light + (material.grain - 0.5) * 0.2) * SHADE_GROUPS.length)));
+  const group = SHADE_GROUPS[density];
   frame.tones[position] = tone;
-  frame.characters[position] = group[Math.min(group.length - 1, Math.floor(texture * group.length))];
+  frame.characters[position] = group[Math.min(group.length - 1, Math.floor(material.glyphVariation * group.length))];
 }
 
 /** Ray march two bodies through a shared field so fusion changes the silhouette.
