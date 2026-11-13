@@ -301,6 +301,27 @@ h1 { font-size: clamp(52px, 5.4vw, 100px); line-height: 1.12; }
   .terminal-content { padding: 12px; }
 }
 
+.resume-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 0 4px #ffffff80, 0 0 12px #ffffff40;
+}
+.resume-link:hover { color: #fff; text-decoration: underline; text-underline-offset: 5px; }
+body[data-appearance=light] .resume-link { color: #29251f; text-shadow: 0 0 4px #fff, 0 0 12px #ffffff80; }
+@media (prefers-reduced-motion: no-preference) and (prefers-contrast: no-preference) {
+  .resume-link { animation: resume-shimmer 4s ease-in-out infinite; }
+}
+@keyframes resume-shimmer {
+  0%, 100% { text-shadow: 0 0 4px #ffffff80, 0 0 12px #ffffff40; }
+  50% { text-shadow: 0 0 5px #ffffffc0, 0 0 18px #ffffff80; }
+}
+@media (prefers-contrast: more) {
+  .resume-link, body[data-appearance=light] .resume-link { text-shadow: none; }
+}
+
 /* Solid surfaces keep the terminal calm in every display mode. */
 body { background-image: none; }
 body[data-appearance=navy] { --bg: #0f0f23; }
