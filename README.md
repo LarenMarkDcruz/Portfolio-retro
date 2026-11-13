@@ -28,7 +28,8 @@ Open http://localhost:8000. Stop the server with Ctrl+C.
 
 - `dist/index.html`: portfolio content, tabs, and contact information.
 - `dist/style.css`: layout, responsive styles, glow, and color palettes.
-- `dist/app.js`: tab navigation, saved theme preferences, filters, and terminal commands.
+- `dist/app.js`: tab navigation, saved theme preferences, and filters.
+- `dist/terminal.js`: website terminal commands, history, completion, custom colors, and resizing.
 - `dist/resume.txt`: downloadable résumé.
 - `dist/SourceCodePro-*`: locally hosted fonts. Their license is in `FONT-LICENSE.txt`.
 
@@ -51,10 +52,26 @@ This publishes the GitHub copy separately from the existing Sites publication. N
 
 ## Display brightness
 
-The site offers dark and warm-white terminal modes, with a separate five-color accent picker. Both preferences are remembered locally. A full-width grid canvas, medium-weight headings, and larger body text keep the retro layout readable. Dark mode uses a black background and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
+The site offers black, midnight navy (#0f0f23), and warm-paper terminal modes, with a separate five-color accent picker. Both preferences are remembered locally. A full-width solid canvas, medium-weight headings, and larger body text keep the retro layout readable. Dark mode uses a black background and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
 
 An experimental CSS HDR enhancement brightens the name, role, and brand only when the browser supports Rec. 2100 linear colors and reports a high dynamic range display. Other browsers use normal colors. Actual HDR output depends on the browser, operating system, display, and its settings; local browser checks cannot verify physical luminance.
 
 ## Résumé link
 
 The Google Docs résumé appears quietly in the footer. To make it accessible to visitors, set that document's General access to **Anyone with the link → Viewer**. A subtle link is still public, not access control. The existing résumé tab and text download remain available.
+
+## Website terminal
+
+Open **[command line]** and enter `help`. This is a browser terminal for the portfolio, not an operating-system shell.
+
+| Purpose | Commands |
+| --- | --- |
+| Navigation | `ls`, `pwd`, `cd skills`, `cd ..`, `open work`, `open github`, `open linkedin`, `open resume` |
+| Appearance | `theme cyan`, `mode light`, `mode navy`, `bg #101018`, `fg #eeeeee`, `reset` |
+| Terminal | `size compact`, `size normal`, `size large`, `history`, `whoami`, `clear` |
+
+`cd resume` opens the résumé section; `open resume` opens the Google Doc in a new tab. Popup blockers may require using the page link instead. Arrow keys recall session history. Tab completes commands and arguments; Shift+Tab leaves the field. Ctrl+L clears output; Ctrl+C cancels input.
+
+Use the height slider, `size` command, or native bottom-edge drag handle to resize the terminal. It stays in document flow. Custom background and foreground colors use six-digit hexadecimal values and require a minimum body-text contrast ratio of 4.5:1. Choosing a palette or display mode resets custom colors. Color settings persist locally; command history stays in the current session.
+
+A brief section entrance and hover glows respect reduced-motion preferences. No photo is required for this text-first portfolio.

@@ -211,7 +211,7 @@ nav a:hover, .intro-links a:hover { text-shadow: 0 0 12px var(--glow); }
 /* Experimental HDR text activates only when both syntax and output support it. */
 @supports (color: color-mix(in rec2100-linear, red, color(rec2100-linear 2 2 2))) {
   @media (dynamic-range: high) and (prefers-contrast: no-preference) {
-    body[data-appearance=dark] :is(.brand, h1, .lead) {
+    body:is([data-appearance=dark], [data-appearance=navy]) :is(.brand, h1, .lead) {
       color: color-mix(in rec2100-linear, var(--phosphor) 80%, color(rec2100-linear 2 2 2));
       dynamic-range-limit: no-limit;
     }
@@ -220,7 +220,7 @@ nav a:hover, .intro-links a:hover { text-shadow: 0 0 12px var(--glow); }
 
 /* The terminal fills the window; reading columns constrain prose, not the canvas. */
 .shell { max-width: none; padding: 26px clamp(20px, 2.5vw, 48px) 20px; }
-body { font-size: 20px; background-image: linear-gradient(color-mix(in srgb, var(--line) 18%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--line) 18%, transparent) 1px, transparent 1px); background-size: 64px 64px; }
+body { font-size: 20px; }
 header { padding-bottom: 4px; }
 .brand { font-size: 28px; font-weight: 500; letter-spacing: -.8px; text-shadow: 0 0 5px var(--glow), 0 0 20px var(--glow); }
 .display-controls { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; }
@@ -240,7 +240,7 @@ h2 { font-size: 28px; font-weight: 500; }
 h3 { font-size: 21px; font-weight: 500; }
 .skills-list > div { grid-template-columns: minmax(180px, 20%) minmax(0, 1fr); }
 .resume-entry { max-width: 110ch; }
-body[data-appearance=light] { color-scheme: light; --bg: #f5f3e9; --text: #202b25; --muted: #4b5a50; --line: #c7cec1; }
+body[data-appearance=light] { color-scheme: light; --bg: #eee4d2; --text: #202b25; --muted: #4b5a50; --line: #c9bfae; }
 body[data-appearance=light][data-theme=matrix] { --green: #235e16; --phosphor: #245c12; --bright: #123d0a; --dim: #47643c; --glow: #4a8a282b; }
 body[data-appearance=light][data-theme=amber] { --green: #80500b; --phosphor: #754400; --bright: #593000; --dim: #715c37; --glow: #b278242b; }
 body[data-appearance=light][data-theme=cyan] { --green: #08616f; --phosphor: #005869; --bright: #003e4c; --dim: #3d6268; --glow: #16869a2b; }
@@ -268,13 +268,46 @@ body[data-appearance=light][data-theme=rose] { --green: #93405f; --phosphor: #87
 @media (prefers-contrast: more) { .brand, h1, .lead, h2, h3 { text-shadow: none; } body { background-image: none; } }
 
 /* Tight phosphor halos preserve the letter shapes at every display brightness. */
-body[data-appearance=dark] :is(.brand, h1) {
+body:is([data-appearance=dark], [data-appearance=navy]) :is(.brand, h1) {
   color: var(--green);
   text-shadow: 0 0 2px var(--green), 0 0 5px var(--glow), 0 0 12px var(--glow);
 }
-body[data-appearance=dark] .lead {
+body:is([data-appearance=dark], [data-appearance=navy]) .lead {
   text-shadow: 0 0 2px var(--glow), 0 0 5px var(--glow);
 }
 @media (prefers-contrast: more) {
-  body[data-appearance=dark] :is(.brand, h1, .lead) { text-shadow: none; }
+  body:is([data-appearance=dark], [data-appearance=navy]) :is(.brand, h1, .lead) { text-shadow: none; }
 }
+
+/* Each dark palette carries the same bright phosphor energy. */
+body:is([data-appearance=dark], [data-appearance=navy])[data-theme=amber] { --green: #ffd15c; --phosphor: #ffe49a; --bright: #fff2c7; --dim: #dbbd78; --glow: #ffcb5470; }
+body:is([data-appearance=dark], [data-appearance=navy])[data-theme=cyan] { --green: #49eaff; --phosphor: #9cf6ff; --bright: #d5fbff; --dim: #83cbd4; --glow: #49eaff70; }
+body:is([data-appearance=dark], [data-appearance=navy])[data-theme=violet] { --green: #ca9aff; --phosphor: #e3c8ff; --bright: #f2e5ff; --dim: #b8a0d4; --glow: #ca9aff70; }
+body:is([data-appearance=dark], [data-appearance=navy])[data-theme=rose] { --green: #ff8cbd; --phosphor: #ffc1dd; --bright: #ffe4ef; --dim: #d6a0b8; --glow: #ff8cbd70; }
+h1 { font-size: clamp(52px, 5.4vw, 100px); line-height: 1.12; }
+.intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.intro-identity { align-self: center; }
+.terminal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px 0; font-size: 15px; }
+.terminal-toolbar input { width: min(220px, 45vw); min-height: 44px; accent-color: var(--green); }
+.terminal-toolbar button { min-height: 44px; }
+.terminal-content { height: 320px; min-height: 200px; max-height: 720px; overflow: auto; resize: vertical; padding: 12px 16px; border: 1px solid var(--line); background: var(--bg); scrollbar-color: var(--dim) var(--bg); }
+.terminal-content > p { margin: 0 0 16px; }
+#terminal-output p { border-left: 1px solid var(--line); padding-left: 12px; }
+.terminal input { color: var(--text); }
+.terminal[open] > summary { color: var(--phosphor); }
+@media (prefers-reduced-motion: no-preference) {
+  section[role=tabpanel]:not([hidden]) { animation: terminal-reveal 220ms ease-out; }
+  .brand { transition: text-shadow 180ms ease; }
+  .brand:hover { text-shadow: 0 0 3px var(--green), 0 0 18px var(--glow); }
+}
+@keyframes terminal-reveal { from { opacity: .4; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 900px) { .intro { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+  h1 { font-size: clamp(40px, 12vw, 68px); }
+  .terminal-content { padding: 12px; }
+  .terminal-toolbar { gap: 4px 12px; }
+}
+
+/* Solid surfaces keep the terminal calm in every display mode. */
+body { background-image: none; }
+body[data-appearance=navy] { --bg: #0f0f23; }

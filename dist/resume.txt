@@ -5,7 +5,7 @@ larenmark@gmail.com
 
 Summary
 
-Full-stack software developer specializing in Python and Java backend services, API integration, and React/TypeScript applications. Experience at Cisco/Splunk, Skip, and EPAM supporting Google, spanning cloud infrastructure, GitLab CI/CD, and production reliability. Builds reusable Claude and Codex skills to improve developer workflows, automate testing, and support debugging; brings end-to-end ownership from implementation to production support.
+Full-stack software developer specializing in Python and Java backend services, API integration, and React/TypeScript applications. Experience at Cisco/Splunk, Skip, and EPAM supporting Google, spanning cloud infrastructure, GitLab CI/CD, and production reliability. Builds reusable automation workflows to improve testing and debugging; brings end-to-end ownership from implementation to production support.
 
 Professional Experience
 
@@ -14,8 +14,8 @@ Cisco Systems Canada Co. – Splunk (remote) 	Vancouver, BC
 Site Reliability Engineer - Software Developer	June 2025 - Present
 Work with Kubernetes and Go in a DevOps-focused site reliability role.
 Own Python backend development and API integration for the Splunk Enterprise Security Health App, automating upgrade validation and delivering updates across active release lines.
-Designed Claude and Codex skills for Health App test automation, saving 2 hours of testing time and streamlining developer workflows.
-Develop and refine Claude and Codex debugging skills, incorporating new bug findings and diagnostic steps to accelerate issue investigation and enhancements.
+Designed reusable workflows for Health App test automation, saving 2 hours of testing time and streamlining developer workflows.
+Develop and refine debugging workflows, incorporating new bug findings and diagnostic steps to accelerate issue investigation and enhancements.
 Remediated security vulnerabilities and backported fixes across release branches to protect customers using older versions.
 Extend ArgoUI and Puppet infrastructure checks and installation before Health App activation; use mtail to extract log-derived metrics for observability.
 Maintained and patched TruStar services using SaltStack, then completed service deprecation and retirement.

@@ -1,3 +1,5 @@
+import { initializeTerminal } from './terminal.js';
+
 const themePicker = document.querySelector('#theme');
 const themes = ['matrix', 'amber', 'cyan', 'violet', 'rose'];
 const themeStorageKey = 'portfolio-color-theme';
@@ -76,35 +78,13 @@ function restoreTab() { showTab(location.hash.slice(1)); }
 window.addEventListener('hashchange', restoreTab);
 window.addEventListener('popstate', restoreTab);
 restoreTab();
-const output = document.querySelector('#terminal-output');
-const input = document.querySelector('#terminal-input');
-document.querySelector('#terminal-form').addEventListener('submit', event => {
-  event.preventDefault();
-  const command = input.value.trim().toLowerCase();
-  input.value = '';
-  if (!command) return;
-  if (command === 'clear') { output.replaceChildren(); return; }
-  const entry = document.createElement('p');
-  const routes = {home:'home',work:'work',projects:'work',skills:'skills',resume:'resume',contact:'contact'};
-  const destination = routes[command.replace(/^cd\s+/, '').replace(/[./]/g, '')];
-  let message;
-  if (destination) { navigate(destination, { scroll: true }); message = `Opening /${destination}…`; }
-  else if (command === 'help') message = 'Commands: home, work, skills, resume, contact, ls, whoami, clear.\nYou can also use cd work (or another section).';
-  else if (command === 'ls') message = 'home/  skills/  resume/  work/  contact/';
-  else if (command === 'whoami') message = 'Laren Mark D’Cruz — Software Engineer & Site Reliability Engineer. Currently at Cisco/Splunk. Building websites in Victoria, BC.';
-  else message = `Command not found: ${command}. Type help to see available commands.`;
-  entry.textContent = `$ ${command}\n${message}`;
-  output.append(entry);
-  while (output.children.length > 6) output.firstElementChild.remove();
-});
-
 /** Apply and remember the selected terminal appearance. @returns {void} */
 function initializeAppearancePicker() {
   const appearancePicker = document.querySelector('#appearance');
   const appearanceStorageKey = 'portfolio-display-appearance';
   try {
     const savedAppearance = localStorage.getItem(appearanceStorageKey);
-    document.body.dataset.appearance = savedAppearance === 'light' ? 'light' : 'dark';
+    document.body.dataset.appearance = ['dark', 'navy', 'light'].includes(savedAppearance) ? savedAppearance : 'dark';
   } catch (storageError) {
     console.warn('Appearance preference could not be read', { storageError });
   }
@@ -119,3 +99,5 @@ function initializeAppearancePicker() {
   });
 }
 initializeAppearancePicker();
+
+initializeTerminal({ navigate, themes });
