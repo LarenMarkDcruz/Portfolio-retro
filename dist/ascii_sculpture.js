@@ -1,5 +1,5 @@
-import { createSculptureScene } from './sculpture_surfaces.js?v=fusion-dwell';
-import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=fusion-dwell';
+import { createSculptureScene } from './sculpture_surfaces.js?v=hollow-fusion';
+import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=hollow-fusion';
 
 
 const FRAME_COLUMNS = 160;

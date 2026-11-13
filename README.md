@@ -82,7 +82,7 @@ A brief section entrance and hover glows respect reduced-motion preferences. No 
 
 ## Abstract ASCII sculpture
 
-Beyond code always opens Classic fusion with a random seed and starting pose. Two warped bodies rotate, exchange sizes, and merge through a smooth distance field. Each motion cycle chooses varying joined and separated hold durations, with smooth transitions between them. Random reset generates another Classic fusion composition; pause freezes the current state. The style dropdown is removed.
+Beyond code always opens Classic fusion with a random seed and starting pose. Two hollow, warped loops rotate independently and exchange sizes while apart. As they approach, their orientation and proportions align into one rotating, rounded or oval loop. A central tunnel is carved after fusion so overlapping surfaces cannot fill the opening; it naturally appears narrower when viewed edge-on. Each motion cycle chooses varying joined and separated hold durations, with smooth transitions between them. Random reset generates another Classic fusion composition; pause freezes the current state. The style dropdown is removed.
 
 The sixteen alternative families are archived in `archive/ascii_style_library/` and are not loaded by the live website. See `SCULPTURE_STYLES.md` for the catalogue and restoration notes, also referenced by Codex and Claude project instructions.
 

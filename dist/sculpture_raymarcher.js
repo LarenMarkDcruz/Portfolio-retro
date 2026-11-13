@@ -1,4 +1,4 @@
-import { sampleSculptureDistance, sampleSculptureSurface } from './sculpture_surfaces.js?v=fusion-dwell';
+import { sampleSculptureDistance, sampleSculptureSurface } from './sculpture_surfaces.js?v=hollow-fusion';
 
 const MAXIMUM_RAY_STEPS = 80;
 const SURFACE_HIT_DISTANCE = 0.009;
