@@ -4,4 +4,4 @@ These are the JavaScript renderers from commit `9b889b7`, saved before Classic f
 
 `SCULPTURE_STYLES.md` at the repository root lists the active and archived styles. The archived modules remain covered by `tests/sculpture_patterns.test.mjs`.
 
-To restore selectable styles, explicitly request that change. Use this snapshot together with the HTML, CSS, and app integration from commit `9b889b7`, preserving newer unrelated website changes. The active Classic fusion renderer has since gained randomized joined/separated holds and half-speed motion.
+To restore selectable styles, explicitly request that change. Use this snapshot together with the HTML, CSS, and app integration from commit `9b889b7`, preserving newer unrelated website changes. The active Classic fusion renderer has since gained randomized joined/separated holds and an independently tuned motion speed.
