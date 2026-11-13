@@ -1,15 +1,57 @@
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 const NORMAL_SAMPLE_OFFSET = 0.006;
+const FUSION_CYCLE_DURATION_IN_SECONDS = 32;
+const JOINED_BODY_SEPARATION = 0.12;
+
+/** Derive repeatable random values without storing animation state.
+ * @param {number} seed
+ * @param {number} position
+ * @returns {number}
+ */
+function sampleSculptureSeed(seed, position) {
+  const value = Math.sin(seed * 127.1 + position * 311.7) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+/** Stop smoothly at either end of an approach or separation.
+ * @param {number} progress
+ * @returns {number}
+ */
+function easeFusionTransition(progress) {
+  return progress ** 3 * (progress * (progress * 6 - 15) + 10);
+}
+
+/** Alternate randomized contact and separation holds without jumping between cycles.
+ * @param {{time: number, variation: number}} options
+ * @returns {{separation: number, phase: string}}
+ */
+export function sampleFusionMotion({ time, variation }) {
+  const elapsed = time + sampleSculptureSeed(variation, 1) * FUSION_CYCLE_DURATION_IN_SECONDS;
+  const cycle = Math.floor(elapsed / FUSION_CYCLE_DURATION_IN_SECONDS);
+  const position = elapsed - cycle * FUSION_CYCLE_DURATION_IN_SECONDS;
+  const joinedDuration = 4 + sampleSculptureSeed(variation, cycle * 4 + 10) * 6;
+  const separatedDuration = 2 + sampleSculptureSeed(variation, cycle * 4 + 11) * 4;
+  const travelDuration = FUSION_CYCLE_DURATION_IN_SECONDS - joinedDuration - separatedDuration;
+  const departingDuration = travelDuration * (0.4 + sampleSculptureSeed(variation, cycle * 4 + 12) * 0.2);
+  const maximumSeparation = 1.65 + sampleSculptureSeed(variation, cycle * 4 + 13) * 0.2;
+  const distance = maximumSeparation - JOINED_BODY_SEPARATION;
+  if (position < joinedDuration) return { separation: JOINED_BODY_SEPARATION, phase: 'joined' };
+  if (position < joinedDuration + departingDuration) {
+    const progress = (position - joinedDuration) / departingDuration;
+    return { separation: JOINED_BODY_SEPARATION + distance * easeFusionTransition(progress), phase: 'separating' };
+  }
+  const returningStart = joinedDuration + departingDuration + separatedDuration;
+  if (position < returningStart) return { separation: maximumSeparation, phase: 'separated' };
+  const progress = (position - returningStart) / (travelDuration - departingDuration);
+  return { separation: maximumSeparation - distance * easeFusionTransition(progress), phase: 'merging' };
+}
 
 /** Derive stable proportions and motion offsets from a random seed.
  * @param {number} seed
  * @returns {{phase: number, ripple: number, tilt: number}}
  */
 function createSculpturePattern(seed) {
-  const randomAt = position => {
-    const value = Math.sin(seed * 127.1 + position * 311.7) * 43758.5453;
-    return value - Math.floor(value);
-  };
+  const randomAt = position => sampleSculptureSeed(seed, position);
   return { phase: randomAt(1) * FULL_ROTATION_IN_RADIANS,
     ripple: 0.035 + randomAt(2) * 0.055, tilt: randomAt(3) * FULL_ROTATION_IN_RADIANS };
 }
@@ -20,7 +62,7 @@ function createSculpturePattern(seed) {
  */
 export function createSculptureScene({ time, variation }) {
   const pattern = createSculpturePattern(variation);
-  const separation = 0.12 + 1.65 * (0.5 + 0.5 * Math.sin(time * 0.32 + pattern.phase));
+  const { separation } = sampleFusionMotion({ time, variation });
   const growth = 0.5 + 0.5 * Math.sin(time * 0.23 + pattern.phase + 1);
   const orbit = Math.sin(time * 0.11 + pattern.tilt) * 0.65;
   const bodies = [0, 1].map(index => {

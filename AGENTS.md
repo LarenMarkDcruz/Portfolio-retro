@@ -16,4 +16,4 @@ Check JavaScript syntax with `node --check dist/app.js` when Node is available. 
 
 This GitHub repository is separate from the Sites deployment repository. Pushing here does not publish changes to Sites. Do not add deployment credentials to files.
 
-When Laren asks about ASCII styles, read and show the choices in `SCULPTURE_STYLES.md`, including Classic fusion. Preserve selectable older styles when introducing new ones. `CLAUDE.md` points Claude sessions to the same catalogue.
+Classic fusion is the only active ASCII style, with randomized starting poses, joined/separated holds, and half-speed motion. No style dropdown. When Laren asks about ASCII styles, read `SCULPTURE_STYLES.md` and distinguish active from archived styles. Other styles remain in `archive/ascii_style_library/`; do not reactivate them unless requested. `CLAUDE.md` points Claude sessions to the same catalogue.

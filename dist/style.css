@@ -446,8 +446,6 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 body[data-appearance=light] .sculpture-tone-5, body[data-appearance=light] .sculpture-tone-6 { color: var(--bright); text-shadow: none; }
 @media (prefers-contrast: more) { .sculpture-tone { color: var(--text); text-shadow: none; } }
 
-#sculpture-style { width: 120px; min-height: 44px; border: 0; border-radius: 0; background: var(--bg); color: var(--green); font: inherit; cursor: pointer; }
-#sculpture-style:focus-visible { outline: 1px solid var(--green); outline-offset: 2px; }
 
 #ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-0 { color: color-mix(in srgb, var(--bg) 72%, var(--green)); }
 #ascii-sculpture[data-pattern="Classic fusion"] .sculpture-tone-1 { color: color-mix(in srgb, var(--bg) 50%, var(--green)); }

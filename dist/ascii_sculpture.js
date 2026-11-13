@@ -1,8 +1,6 @@
-import { createSculptureScene } from './sculpture_surfaces.js?v=abstract-contours';
-import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=abstract-contours';
+import { createSculptureScene } from './sculpture_surfaces.js?v=fusion-dwell';
+import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=fusion-dwell';
 
-import { SCULPTURE_PATTERNS, SCULPTURE_STYLES, createPatternGeometry, selectSculpturePattern } from './sculpture_patterns.js?v=style-library';
-import { createSculptureFrame, drawSculptureOrbits, renderPatternSculpture } from './sculpture_point_renderer.js?v=style-library';
 
 const FRAME_COLUMNS = 160;
 const FRAME_ROWS = 96;
@@ -18,8 +16,8 @@ const DEFAULT_VIEWPORT = Object.freeze({ columns: FRAME_COLUMNS, rows: FRAME_ROW
   halfHeight: VIEW_HALF_WIDTH * FRAME_ROWS * CHARACTER_LINE_HEIGHT /
     (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) });
 const HIGHLIGHT_GLOW_IN_PIXELS = 3.375;
-const MINIMUM_MOTION_SPEED_MULTIPLIER = 2.25;
-const MAXIMUM_MOTION_SPEED_MULTIPLIER = 3;
+const MINIMUM_MOTION_SPEED_MULTIPLIER = 1.125;
+const MAXIMUM_MOTION_SPEED_MULTIPLIER = 1.5;
 
 /** Ease between faster motion speeds using a seed-specific rhythm.
  * @param {{time: number, variation: number}} options
@@ -66,10 +64,10 @@ function writeSurfaceCharacter({ surface, scene, position }, frame) {
  */
 function renderSculptureFrame(options) {
   const viewport = options.viewport ?? DEFAULT_VIEWPORT;
-  const geometry = options.geometry ?? createPatternGeometry(options.variation);
-  if (geometry.pattern.firstSurface !== 'fusion') return renderPatternSculpture({ geometry, time: options.time, viewport });
   const scene = createSculptureScene(options);
-  const frame = createSculptureFrame(viewport);
+  const frame = { columns: viewport.columns, rows: viewport.rows,
+    characters: Array(viewport.columns * viewport.rows).fill(' '),
+    tones: new Uint8Array(viewport.columns * viewport.rows) };
   for (let row = 0; row < viewport.rows; row++) {
     for (let column = 0; column < viewport.columns; column++) {
       const origin = [((column + 0.5) / viewport.columns * 2 - 1) * viewport.halfWidth,
@@ -78,10 +76,8 @@ function renderSculptureFrame(options) {
       if (!surface) continue;
       const position = row * viewport.columns + column;
       writeSurfaceCharacter({ surface, scene, position }, frame);
-      frame.depths[position] = surface.point[2];
     }
   }
-  drawSculptureOrbits({ geometry, time: options.time }, frame, viewport);
   return frame;
 }
 
@@ -122,7 +118,7 @@ function drawSculpture({ artwork, state }) {
     layer.textContent = formatCharacterRows(frame.characters.map((character, index) =>
       frame.tones[index] === tone ? character : ' '), frame.columns);
   });
-  artwork.dataset.pattern = state.geometry.pattern.name;
+  artwork.dataset.pattern = 'Classic fusion';
   artwork.style.setProperty('--sculpture-glow', `${HIGHLIGHT_GLOW_IN_PIXELS}px`);
 }
 
@@ -166,13 +162,13 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
 }
 
 /** Keep animation work scoped to a visible, unpaused sculpture.
- * @param {{artwork: HTMLElement, button: HTMLButtonElement, resetButton: HTMLButtonElement, stylePicker: HTMLSelectElement}} elements
+ * @param {{artwork: HTMLElement, button: HTMLButtonElement, resetButton: HTMLButtonElement}} elements
  * @returns {void}
  */
-export function initializeAsciiSculpture({ artwork, button, resetButton, stylePicker }) {
+export function initializeAsciiSculpture({ artwork, button, resetButton }) {
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   const variation = Math.random() * FULL_ROTATION_IN_RADIANS;
-  const state = { style: 'random', geometry: createPatternGeometry(variation), viewport: DEFAULT_VIEWPORT, isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
+  const state = { viewport: DEFAULT_VIEWPORT, isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
     variation };
   const drawFrame = createFrameRenderer({ artwork, state });
   const synchronizePlayback = createPlaybackSynchronizer({ button, state, motionPreference, drawFrame });
@@ -180,7 +176,6 @@ export function initializeAsciiSculpture({ artwork, button, resetButton, stylePi
   drawSculpture({ artwork, state });
   observeSculpturePlayback({ artwork, button, state, synchronizePlayback, motionPreference });
   connectSculptureControls({ artwork, state, resetButton });
-  connectSculptureStylePicker({ artwork, state, stylePicker });
 }
 
 /** Connect visibility, motion preferences, and the optional pause control.
@@ -202,18 +197,13 @@ function observeSculpturePlayback({ artwork, button, state, synchronizePlayback,
   synchronizePlayback();
 }
 
-/** Randomize the pose while preserving an explicitly chosen family.
+/** Choose a new Classic fusion shape and starting rotation for each reset.
  * @param {object} state
  * @returns {void}
  */
 function randomizeSculptureState(state) {
   state.time = Math.random() * 48;
-  let variation = Math.random() * FULL_ROTATION_IN_RADIANS;
-  if (state.style === 'random' && selectSculpturePattern(variation) === state.geometry.pattern) {
-    variation = (variation + FULL_ROTATION_IN_RADIANS / SCULPTURE_PATTERNS.length) % FULL_ROTATION_IN_RADIANS;
-  }
-  state.variation = variation;
-  state.geometry = createPatternGeometry(variation, state.style);
+  state.variation = Math.random() * FULL_ROTATION_IN_RADIANS;
 }
 
 /** Randomize both bodies without changing the playback state.
@@ -222,19 +212,6 @@ function randomizeSculptureState(state) {
  */
 function connectSculptureControls({ artwork, state, resetButton }) {
   resetButton.addEventListener('click', () => {
-    randomizeSculptureState(state);
-    drawSculpture({ artwork, state });
-  });
-}
-
-/** Make every current family and the original algorithm directly selectable.
- * @param {{artwork: HTMLElement, state: object, stylePicker: HTMLSelectElement}} options
- * @returns {void}
- */
-function connectSculptureStylePicker({ artwork, state, stylePicker }) {
-  SCULPTURE_STYLES.forEach(style => stylePicker.add(new Option(style.label, style.value)));
-  stylePicker.addEventListener('change', () => {
-    state.style = stylePicker.value;
     randomizeSculptureState(state);
     drawSculpture({ artwork, state });
   });

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { SCULPTURE_PATTERNS, SCULPTURE_STYLES, createPatternGeometry, selectSculpturePattern } from '../dist/sculpture_patterns.js';
-import { createSculptureViewport, renderAsciiSculpture } from '../dist/ascii_sculpture.js';
-import { renderPatternSculpture } from '../dist/sculpture_point_renderer.js';
+import { SCULPTURE_PATTERNS, SCULPTURE_STYLES, createPatternGeometry, selectSculpturePattern } from '../archive/ascii_style_library/sculpture_patterns.js';
+import { createSculptureViewport, renderAsciiSculpture } from '../archive/ascii_style_library/ascii_sculpture.js';
+import { renderPatternSculpture } from '../archive/ascii_style_library/sculpture_point_renderer.js';
 
 test('should select all sixteen distinct families from equally spaced random seeds', () => {
   const selections = SCULPTURE_PATTERNS.map((pattern, index) => {

@@ -1,12 +1,14 @@
 # ASCII sculpture style catalogue
 
-When Laren asks about available ASCII styles, show this catalogue, including **Classic fusion**. Keep existing styles available when adding new ones. Codex and Claude sessions working in this repository should read this file before discussing or replacing sculpture styles.
+When Laren asks about available ASCII styles, show this catalogue and distinguish **active** from **archived**. Codex and Claude sessions in this repository should read this file before discussing or replacing styles. Do not reactivate archived styles unless requested.
 
-Use the style picker beside **random reset** on `beyond.cpp`. **Random mix** chooses among the sixteen reference-inspired families. Selecting a named family keeps it selected during resets; reset varies its proportions and starting pose. **Classic fusion** restores the previous two-body distance-field renderer, without orbital bands.
+**Active: Classic fusion.** It is the only live style; the dropdown has been removed. Each load and random reset generates a new seed and starting pose. Two curved bodies merge, stay joined for a random duration, separate, and linger apart. Transitions ease smoothly; motion runs at half the previous speed.
+
+**Archived: the sixteen reference-inspired families below.** Their renderers live in `archive/ascii_style_library/`, and the selectable website version remains in commit `9b889b7`. They are retained for future restoration, not loaded by the live website.
 
 | Style | Type | Appearance |
 |---|---|---|
-| Classic fusion | Original | Two warped bodies grow, merge into a shared surface, and separate |
+| Classic fusion | Active | Two warped bodies grow, merge into a shared surface, and separate |
 | Orbital duet | Rounded | A ring and sphere inside curved orbital bands |
 | Binary planets | Rounded | Two growing spheres and curved orbital bands |
 | Crescent satellite | Rounded | A thick crescent and companion sphere |
@@ -24,11 +26,11 @@ Use the style picker beside **random reset** on `beyond.cpp`. **Random mix** cho
 | Crystal companions | Geometric | Paired rotating diamond solids |
 | Merging loops | Fusion | The distance-field pair with curved orbital bands |
 
-The sixteen families interpret the supplied 4×4 reference; they are procedural designs rather than exact image reproductions. The geometry catalogue lives in `dist/sculpture_patterns.js`.
+The sixteen families interpret the supplied 4×4 reference; they are procedural designs rather than exact image reproductions. The archived geometry catalogue lives in `archive/ascii_style_library/sculpture_patterns.js`.
 
 ## Rendering choices
 
 - Resolution: 160 columns on desktop; 128 on narrow sculpture windows. Fixed camera; oversized forms crop at the rectangle edges.
-- Curves: broad ribbons and shaded orbital tubes replace sparse, single-character orbital paths.
+- Curves: the active renderer uses two smoothly fused, warped surfaces. The archived families include ribbons, orbital tubes, spirals, and geometric forms.
 - Animation: target up to 120 FPS through `requestAnimationFrame`. Display refresh rate, browser scheduling, and rendering cost determine actual FPS. Motion speed remains independent of FPS.
-- Accessibility: pause, random reset, keyboard-operable style picker, and reduced-motion support remain available.
+- Accessibility: pause, random reset, and reduced-motion support remain available. There is no style dropdown.
