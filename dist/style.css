@@ -1,6 +1,7 @@
 @font-face { font-family: 'Source Code Pro'; font-style: normal; font-weight: 500; font-display: swap; src: url('SourceCodePro-Medium.ttf') format('truetype'); }
 @font-face { font-family: 'Source Code Pro'; font-style: normal; font-weight: 300; font-display: swap; src: url('SourceCodePro-300.woff') format('woff'); }
 :root {
+  --site-font: 'Source Code Pro', monospace;
   color-scheme: dark;
   --bg: #000;
   --text: #d5ddd3;
@@ -14,7 +15,7 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 300 18px/1.75 'Source Code Pro', monospace; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 300 18px/1.75 var(--site-font); }
 body[data-theme=amber] { --green: #e2b96b; --bright: #ffe6b5; --phosphor: #ffd079; --glow: #ffd07959; --dim: #a2936a; }
 body[data-theme=cyan] { --green: #78cbd7; --bright: #c2faff; --phosphor: #70eaff; --glow: #70eaff59; --dim: #69979d; }
 body[data-theme=violet] { --green: #bd9fe3; --bright: #ead7ff; --phosphor: #cea8ff; --glow: #cea8ff59; --dim: #92839f; }
@@ -102,8 +103,6 @@ h3 { color: var(--text); font-size: 17px; font-weight: 400; margin: 6px 0; }
 .terminal input::placeholder { color: var(--muted); }
 .terminal button { min-width: 44px; min-height: 44px; }
 #terminal-output p { white-space: pre-wrap; overflow-wrap: anywhere; }
-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 17px; }
-footer a { display: inline-flex; align-items: center; min-height: 44px; }
 .cursor { color: var(--green); animation: blink 1.3s steps(1) infinite; }
 .skip { position: absolute; top: -70px; padding: 10px; background: var(--bg); z-index: 2; }
 .skip:focus { top: 0; }
@@ -134,7 +133,6 @@ footer a { display: inline-flex; align-items: center; min-height: 44px; }
   .terminal input { font-size: 16px; }
   .terminal form { flex-wrap: wrap; }
   .terminal form label { flex-basis: 100%; }
-  footer { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cursor { animation: none; } }
 @media (prefers-contrast: more) { :root { --muted: #b0b9ad; --green: #a4df8c; } .brand,h1,h2,.email,.project details[open] .project-title,nav a[aria-selected=true] { text-shadow: none; } nav a[aria-selected=false] { color: var(--muted); } }
@@ -188,16 +186,15 @@ nav a:hover, .intro-links a:hover { text-shadow: 0 0 12px var(--glow); }
   h1 { font-size: clamp(38px, 10vw, 58px); letter-spacing: -1px; }
   .lead { font-size: 20px; }
   .intro-details .intro-note { font-size: 17px; }
-  .eyebrow, .panel-path, .cpp-meta, .cpp-namespace, .cpp-close, footer { font-size: 14px; }
+  .eyebrow, .panel-path, .cpp-meta, .cpp-namespace, .cpp-close { font-size: 14px; }
   nav a { font-size: 15px; }
   .email { max-width: 100%; display: inline-block; padding-block: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { nav a, .intro-links a { transition: none; } }
 @media (prefers-contrast: more) { .brand, h1, .lead, nav a:hover, .intro-links a:hover { text-shadow: none; } }
 
-.profile-links, .footer-links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.profile-links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
 .profile-links a { display: inline-flex; align-items: center; min-height: 44px; }
-.footer-links .resume-document { color: var(--muted); }
 /* Wider gamut adds saturation; it does not itself increase HDR luminance. */
 @supports (color: color(display-p3 0 1 0)) {
   @media (color-gamut: p3) {
@@ -225,7 +222,7 @@ header { padding-bottom: 4px; }
 .brand { font-size: 28px; font-weight: 500; letter-spacing: -.8px; text-shadow: 0 0 5px var(--glow), 0 0 20px var(--glow); }
 .display-controls { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; }
 .appearance-picker { width: 178px; max-width: 100%; }
-#appearance { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 0; padding: 0 9px; background: var(--bg); color: var(--green); font: 300 16px 'Source Code Pro', monospace; }
+#appearance { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 0; padding: 0 9px; background: var(--bg); color: var(--green); font: 300 16px var(--site-font); }
 #appearance:focus-visible { outline: 1px dashed var(--green); outline-offset: 4px; }
 #theme { font-size: 16px; }
 nav { gap: 6px 28px; }

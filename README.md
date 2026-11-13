@@ -58,21 +58,21 @@ An experimental CSS HDR enhancement brightens the name, role, and brand only whe
 
 ## Résumé link
 
-The Google Docs résumé appears quietly in the footer. To make it accessible to visitors, set that document's General access to **Anyone with the link → Viewer**. A subtle link is still public, not access control. The résumé tab links directly to the Google Doc.
+The résumé tab links to Google Docs; `open resume` opens the same document. The footer has been removed. To make it accessible to visitors, set that document's General access to **Anyone with the link → Viewer**. A subtle link is still public, not access control. The résumé tab links directly to the Google Doc.
 
 ## Website terminal
 
-Open **[command line]** and enter `help`. This is a browser terminal for the portfolio, not an operating-system shell.
+The command line starts expanded. Enter `/help` or `help` for the full website guide. This is a browser terminal for the portfolio, not an operating-system shell.
 
 | Purpose | Commands |
 | --- | --- |
 | Navigation | `ls`, `pwd`, `cd skills`, `cd ..`, `open work`, `open github`, `open linkedin`, `open resume` |
-| Appearance | `theme cyan`, `mode light`, `mode navy`, `bg #101018`, `fg #eeeeee`, `reset` |
+| Appearance | `theme cyan`, `mode light`, `mode navy`, `bg #101018`, `fg #eeeeee`, `accent hotpink`, `font courier`, `reset` |
 | Terminal | `/help`, `history`, `whoami`, `clear` |
 
 `cd resume` opens the résumé section; `open resume` opens the Google Doc in a new tab. Popup blockers may require using the page link instead. Arrow keys recall session history. Tab completes commands and arguments; Shift+Tab leaves the field. Ctrl+L clears output; Ctrl+C cancels input.
 
-The terminal stays in document flow at 28% of the viewport height, with a 180px minimum for small screens. Output scrolls independently while the `visitor-$` prompt stays visible. Use `/help` or `help` for commands. Custom background and foreground colors use six-digit hexadecimal values and require a minimum body-text contrast ratio of 4.5:1. Choosing a palette or display mode resets custom colors. Color settings persist locally; command history stays in the current session.
+The terminal stays in document flow at 28% of the viewport height, with a 180px minimum for small screens. Output scrolls independently while the `visitor-$` prompt stays visible. Use `/help` or `help` for commands. Custom background, foreground, and accent colors accept browser-supported CSS colors: names, hex, RGB, HSL, and other supported color functions. Visitors can choose any colors, including combinations with low contrast; `reset` restores the palette. The `font` command selects bundled Source Code Pro, browser families, or a locally installed font. Choosing a palette or display mode resets custom colors. Color and font settings persist locally; command history stays in the current session.
 
 A brief section entrance and hover glows respect reduced-motion preferences. No photo is required for this text-first portfolio.
 
