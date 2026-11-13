@@ -395,6 +395,16 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 .beyond-aside { min-width: 0; display: grid; gap: 12px; }
 .beyond-contact { font-size: 17px; line-height: 1.5; }
 .beyond-contact p { margin: 0; }
+.contact-invitation {
+  color: var(--bright);
+  font-size: clamp(26px, 2.5vw, 38px);
+  line-height: 1.3;
+  letter-spacing: -.025em;
+  text-wrap: pretty;
+  text-shadow: 0 0 5px var(--glow), 0 0 18px var(--glow);
+}
+body[data-appearance=light] .contact-invitation { color: var(--text); text-shadow: none; }
+@media (prefers-contrast: more) { .contact-invitation { text-shadow: none; } }
 .beyond-contact-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; padding-top: 8px; }
 .beyond-contact-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .ascii-sculpture { min-width: 0; margin: 0; container-type: inline-size; }
