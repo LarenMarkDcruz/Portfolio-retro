@@ -14,6 +14,9 @@
   --dim: #92b589;
 }
 * { box-sizing: border-box; }
+.typing-character { visibility: hidden; }
+.typing-character.is-typed { visibility: visible; }
+.intro-greeting { margin: 0 0 12px; color: var(--text); font-size: clamp(18px, 1.5vw, 23px); }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 300 18px/1.75 var(--site-font); }
 body[data-theme=amber] { --green: #e2b96b; --bright: #ffe6b5; --phosphor: #ffd079; --glow: #ffd07959; --dim: #a2936a; }

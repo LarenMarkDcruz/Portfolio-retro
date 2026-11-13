@@ -1,5 +1,8 @@
 import { initializeTerminal } from './terminal.js';
 import { renderFocusLine, selectFocusLine } from './focus_lines.js';
+import { createIntroTyping } from './intro_typing.js';
+
+const playIntroTyping = createIntroTyping(document.querySelector('#home'));
 
 renderFocusLine({ element: document.querySelector('.cpp-meta'), declaration: selectFocusLine(Math.random()) });
 
@@ -50,6 +53,7 @@ function showTab(id, { focus = false, scroll = false } = {}) {
   document.title = `Laren Mark D’Cruz | ${tabs[activeIndex].textContent.trim().replace(/^\[|\]$/g, '')}`;
   if (focus) tabs[activeIndex].focus();
   if (scroll) window.scrollTo({ top: 0, behavior: 'instant' });
+  playIntroTyping();
 }
 function navigate(id, options = {}) {
   if (!panels.some(panel => panel.id === id)) return;
