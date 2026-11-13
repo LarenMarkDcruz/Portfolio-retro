@@ -28,7 +28,7 @@ Open http://localhost:8000. Stop the server with Ctrl+C.
 
 - `dist/index.html`: portfolio content, tabs, and contact information.
 - `dist/style.css`: layout, responsive styles, glow, and color palettes.
-- `dist/app.js`: tab navigation, saved theme preferences, and filters.
+- `dist/app.js`: tab navigation, display preferences, and filters.
 - `dist/terminal.js`: website terminal commands, history, completion, and custom colors.
 - `dist/resume.txt`: downloadable résumé.
 - `dist/SourceCodePro-*`: locally hosted fonts. Their license is in `FONT-LICENSE.txt`.
@@ -52,7 +52,7 @@ This publishes the GitHub copy separately from the existing Sites publication. N
 
 ## Display brightness
 
-The site offers black, midnight navy (#0f0f23), and warm-paper terminal modes, with a separate five-color accent picker. Both preferences are remembered locally. A full-width solid canvas, medium-weight headings, and larger body text keep the retro layout readable. Dark mode uses a black background and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
+The site offers black, midnight navy (#0f0f23), and warm-paper terminal modes, with a separate five-color accent picker. Matrix green returns on every page load. Other palettes apply during the current visit; the display mode is remembered locally. A full-width solid canvas, medium-weight headings, and larger body text keep the retro layout readable. Dark mode uses a black background and Display P3 accents on compatible screens. P3 improves the available colors; it is not HDR.
 
 An experimental CSS HDR enhancement brightens the name, role, and brand only when the browser supports Rec. 2100 linear colors and reports a high dynamic range display. Other browsers use normal colors. Actual HDR output depends on the browser, operating system, display, and its settings; local browser checks cannot verify physical luminance.
 
@@ -72,7 +72,7 @@ The command line is always visible in a compact, borderless region at the bottom
 
 `cd resume` opens the résumé section; `open resume` opens the Google Doc in a new tab. Popup blockers may require using the page link instead. Arrow keys recall session history. Tab completes commands and arguments; Shift+Tab leaves the field. Ctrl+L clears output; Ctrl+C cancels input.
 
-The compact terminal stays at the bottom in document flow without a box. Output scrolls in a bounded area. The `visit:~/main.cpp $` prompt follows the active tab filename, including history navigation. Click unused terminal space to type; an underscore marks the empty prompt. Keyboard focus uses an underline instead of a dotted rectangle. Use `/help` or `help` for commands. Custom background, foreground, and accent colors accept browser-supported CSS colors: names, hex, RGB, HSL, and other supported color functions. Visitors can choose any colors, including combinations with low contrast; `reset` restores the palette. The `font` command selects bundled Source Code Pro, browser families, or a locally installed font. Choosing a palette or display mode resets custom colors. Color and font settings persist locally; command history stays in the current session.
+The compact terminal stays at the bottom in document flow without a box. Output scrolls in a bounded area. The `visit:~/main.cpp $` prompt follows the active tab filename, including history navigation. Click unused terminal space to type; an underscore marks the empty prompt. Keyboard focus uses an underline instead of a dotted rectangle. Use `/help` or `help` for commands. Custom background, foreground, and accent colors accept browser-supported CSS colors: names, hex, RGB, HSL, and other supported color functions. Visitors can choose any colors, including combinations with low contrast; `reset` restores the palette. The `font` command selects bundled Source Code Pro, browser families, or a locally installed font. Choosing a palette or display mode resets custom colors. Custom colors and command history stay within the current visit. Fonts persist locally; reload restores the Matrix palette.
 
 A brief section entrance and hover glows respect reduced-motion preferences. No photo is required for this text-first portfolio.
 
@@ -84,8 +84,12 @@ A brief section entrance and hover glows respect reduced-motion preferences. No 
 
 Beyond code shows two warped, abstract bodies. They rotate independently, exchange sizes, merge through a smooth distance field, and separate again. Ray marching draws their shared surface, including the connecting neck and its lighting. Automatic framing keeps both bodies visible. Random reset changes their seed and starting position; pause freezes the current state. Contrast stays fixed at 225%, with no intensity slider.
 
-The animation pauses offscreen and respects reduced-motion preferences. No external services or dependencies are required. Run the geometry and rendering checks with:
+The renderer targets 40 frames per second. Motion gradually varies between 1.5× and 2× speed using a seed-specific rhythm. The artwork trims invisible character padding inside a full-width landscape rectangle above the caption and controls. Its height adapts to desktop space and mobile width, fitting the shapes without distortion. Desktop contact links sit directly below it; mobile shows contact links before the hobbies. The animation pauses offscreen and respects reduced-motion preferences. No external services or dependencies are required. Run the geometry and rendering checks with:
 
 ```sh
-node --test tests/sculpture_surfaces.test.mjs tests/sculpture_raymarcher.test.mjs
+node --test tests/*.test.mjs
 ```
+
+## Random three-sentence introduction
+
+`dist/intro_sentences.js` contains 30 wordings in three pools: software engineering, the current Cisco/Splunk role, and Victoria, BC. Every load independently picks one sentence from each pool, producing 1,000 possible combinations. The factual details stay consistent. The existing sequential typing animation reveals the selected text, with the underscore at its end.

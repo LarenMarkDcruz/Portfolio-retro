@@ -377,20 +377,58 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 .ascii-doodle figcaption { max-width: 32ch; color: var(--muted); font-size: 14px; }
 @media (prefers-contrast: more) { .ascii-doodle pre { text-shadow: none; } }
 
-.beyond-interests { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: center; }
-.beyond-interests .interests-list { margin: 0; }
+#beyond { padding-top: 16px; }
+#beyond .section-heading { padding-bottom: 8px; }
+#beyond h2 { line-height: 1.35; }
+#beyond .section-note { margin: 12px 0 16px; }
+.beyond-interests { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.beyond-interests .interests-list { margin: 0; font-size: 18px; line-height: 1.5; }
+.beyond-interests .interests-list li { margin-bottom: 16px; }
+.beyond-interests .interests-list li:last-child { margin-bottom: 0; }
+.beyond-aside { min-width: 0; display: grid; gap: 12px; }
+.beyond-contact { font-size: 17px; line-height: 1.5; }
+.beyond-contact p { margin: 0; }
+.beyond-contact-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; padding-top: 8px; }
+.beyond-contact-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .ascii-sculpture { min-width: 0; margin: 0; container-type: inline-size; }
-.ascii-sculpture pre { position: relative; margin: 0; overflow: hidden; color: var(--green); font: 500 clamp(4px, 1.55cqw, 10px)/1.08 'Source Code Pro', monospace; white-space: pre; text-shadow: none; }
+.ascii-sculpture pre {
+  --sculpture-height: min(56.25cqw, clamp(140px, 100svh - 550px, 320px));
+  position: relative;
+  height: var(--sculpture-height);
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--green);
+  font: 500 min(calc(100cqw / var(--sculpture-columns, 104) / .6), calc(var(--sculpture-height) / var(--sculpture-rows, 64) / 1.08))/1.08 'Source Code Pro', monospace;
+  white-space: pre;
+  text-shadow: none;
+}
 .ascii-sculpture figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 13px; }
 .ascii-sculpture button { min-height: 44px; }
 @media (max-width: 900px) {
   .beyond-interests { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .beyond-aside { display: contents; }
+  .beyond-contact { grid-row: 1; }
+  .beyond-interests .interests-list { grid-row: 2; }
+  .ascii-sculpture { grid-row: 3; }
   .ascii-sculpture { width: 100%; max-width: 540px; justify-self: center; }
+  .ascii-sculpture pre { --sculpture-height: min(56.25cqw, 280px); }
+}
+@media (max-width: 600px) {
+  #beyond .section-note { margin: 8px 0 12px; font-size: 17px; line-height: 1.5; }
+  .beyond-contact { font-size: 16px; }
+}
+@media (max-width: 360px) {
+  #beyond { padding-top: 6px; }
+  #beyond .section-heading { gap: 4px; }
+  #beyond h2 { font-size: 22px; }
+  #beyond .section-heading > span { font-size: 14px; }
+  #beyond .section-note { margin: 4px 0 8px; }
+  .beyond-contact-links { padding-top: 4px; }
 }
 @media (prefers-contrast: more) { .ascii-sculpture pre { text-shadow: none; } }
 .sculpture-actions { display: flex; flex-wrap: wrap; gap: 16px; }
-.sculpture-tone { display: block; position: absolute; inset: 0; pointer-events: none; }
-.sculpture-tone:first-child { position: relative; }
+.sculpture-tone { display: block; position: absolute; top: 50%; left: 50%; width: max-content; transform: translate(-50%, -50%); pointer-events: none; }
 .sculpture-tone-0 { color: color-mix(in srgb, var(--bg) 72%, var(--green)); }
 .sculpture-tone-1 { color: color-mix(in srgb, var(--bg) 50%, var(--green)); }
 .sculpture-tone-2 { color: color-mix(in srgb, var(--bg) 22%, var(--green)); }

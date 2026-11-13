@@ -3,11 +3,26 @@ import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher
 
 const FRAME_COLUMNS = 104;
 const FRAME_ROWS = 64;
-const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 20;
+const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 40;
 const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!', 'i|()[]', 'tszvcr', '2345XY', 'GKZB8M', 'W%#@']);
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 const FRAME_HEIGHT_TO_WIDTH_RATIO = 1.11;
 const HIGHLIGHT_GLOW_IN_PIXELS = 3.375;
+const MINIMUM_MOTION_SPEED_MULTIPLIER = 1.5;
+const MAXIMUM_MOTION_SPEED_MULTIPLIER = 2;
+const FULL_FRAME_WINDOW = Object.freeze({ firstRow: 0, lastRow: FRAME_ROWS - 1,
+  firstColumn: 0, lastColumn: FRAME_COLUMNS - 1 });
+
+/** Ease between faster motion speeds using a seed-specific rhythm.
+ * @param {{time: number, variation: number}} options
+ * @returns {number}
+ */
+export function calculateSculptureMotionSpeed({ time, variation }) {
+  const frequency = 0.12 + 0.05 * Math.sin(variation);
+  const progress = 0.5 + 0.5 * Math.sin(time * frequency + variation);
+  return MINIMUM_MOTION_SPEED_MULTIPLIER + progress *
+    (MAXIMUM_MOTION_SPEED_MULTIPLIER - MINIMUM_MOTION_SPEED_MULTIPLIER);
+}
 
 /** Keep both bodies prominent while allowing room for separation and growth.
  * @param {object} scene
@@ -62,13 +77,40 @@ function renderSculptureFrame(options) {
   return frame;
 }
 
-/** Format a fixed-width buffer without changing its alignment.
+/** Find the occupied rectangle so invisible canvas padding cannot shrink the art.
  * @param {string[]} characters
+ * @returns {{firstRow: number, lastRow: number, firstColumn: number, lastColumn: number}}
+ */
+function findSculptureWindow(characters) {
+  let firstRow = FRAME_ROWS;
+  let lastRow = 0;
+  let firstColumn = FRAME_COLUMNS;
+  let lastColumn = 0;
+  characters.forEach((character, position) => {
+    if (character === ' ') return;
+    const row = Math.floor(position / FRAME_COLUMNS);
+    const column = position % FRAME_COLUMNS;
+    firstRow = Math.min(firstRow, row);
+    lastRow = Math.max(lastRow, row);
+    firstColumn = Math.min(firstColumn, column);
+    lastColumn = Math.max(lastColumn, column);
+  });
+  if (firstRow === FRAME_ROWS) return FULL_FRAME_WINDOW;
+  return { firstRow: Math.max(0, firstRow - 2), lastRow: Math.min(FRAME_ROWS - 1, lastRow + 2),
+    firstColumn: Math.max(0, firstColumn - 2), lastColumn: Math.min(FRAME_COLUMNS - 1, lastColumn + 2) };
+}
+
+/** Format a character window while preserving alignment across every shade layer.
+ * @param {string[]} characters
+ * @param {object} window
  * @returns {string}
  */
-function formatCharacterRows(characters) {
-  return Array.from({ length: FRAME_ROWS }, (_, row) =>
-    characters.slice(row * FRAME_COLUMNS, (row + 1) * FRAME_COLUMNS).join('')).join('\n');
+function formatCharacterRows(characters, window = FULL_FRAME_WINDOW) {
+  return Array.from({ length: window.lastRow - window.firstRow + 1 }, (_, index) => {
+    const row = window.firstRow + index;
+    return characters.slice(row * FRAME_COLUMNS + window.firstColumn,
+      row * FRAME_COLUMNS + window.lastColumn + 1).join('');
+  }).join('\n');
 }
 
 /** Render a deterministic plain-text snapshot for a given time and random seed.
@@ -85,6 +127,9 @@ export function renderAsciiSculpture(options) {
  */
 function drawSculpture({ artwork, state }) {
   const frame = renderSculptureFrame(state);
+  const window = findSculptureWindow(frame.characters);
+  artwork.style.setProperty('--sculpture-columns', window.lastColumn - window.firstColumn + 1);
+  artwork.style.setProperty('--sculpture-rows', window.lastRow - window.firstRow + 1);
   if (!artwork.firstElementChild) {
     artwork.textContent = '';
     for (let tone = 0; tone < SHADE_GROUPS.length; tone++) {
@@ -95,7 +140,7 @@ function drawSculpture({ artwork, state }) {
   }
   Array.from(artwork.children).forEach((layer, tone) => {
     layer.textContent = formatCharacterRows(frame.characters.map((character, index) =>
-      frame.tones[index] === tone ? character : ' '));
+      frame.tones[index] === tone ? character : ' '), window);
   });
   artwork.style.setProperty('--sculpture-glow', `${HIGHLIGHT_GLOW_IN_PIXELS}px`);
 }
@@ -108,9 +153,11 @@ function createFrameRenderer({ artwork, state }) {
   const drawFrame = timestamp => {
     const elapsed = timestamp - state.lastFrame;
     if (elapsed >= FRAME_INTERVAL_IN_MILLISECONDS) {
-      state.time += Math.min(elapsed, 100) / 1000;
+      const motionElapsed = timestamp - state.lastMotionUpdate;
+      state.time += Math.min(motionElapsed, 100) / 1000 * calculateSculptureMotionSpeed(state);
       drawSculpture({ artwork, state });
-      state.lastFrame = timestamp;
+      state.lastMotionUpdate = timestamp;
+      state.lastFrame = timestamp - elapsed % FRAME_INTERVAL_IN_MILLISECONDS;
     }
     state.frameRequest = requestAnimationFrame(drawFrame);
   };
@@ -127,6 +174,7 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
     const shouldAnimate = state.isVisible && !state.isPaused && !document.hidden && !motionPreference.matches;
     if (shouldAnimate) {
       state.lastFrame = performance.now();
+      state.lastMotionUpdate = state.lastFrame;
       state.frameRequest = requestAnimationFrame(drawFrame);
     }
     button.textContent = shouldAnimate ? '[pause]' : '[play]';
@@ -142,7 +190,7 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
  */
 export function initializeAsciiSculpture({ artwork, button, resetButton }) {
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, time: Math.random() * 48,
+  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
     variation: Math.random() * FULL_ROTATION_IN_RADIANS };
   const drawFrame = createFrameRenderer({ artwork, state });
   const synchronizePlayback = createPlaybackSynchronizer({ button, state, motionPreference, drawFrame });

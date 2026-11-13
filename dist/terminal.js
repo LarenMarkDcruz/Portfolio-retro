@@ -31,17 +31,18 @@ function applyCustomAppearance(preferences) {
   }
 }
 
-/** Persist appearance preferences when storage is available. @param {object} preferences @returns {void} */
+/** Remember the font while keeping color customizations scoped to this visit. @param {object} preferences @returns {void} */
 function saveCustomAppearance(preferences) {
-  try { localStorage.setItem(COLOR_STORAGE_KEY, JSON.stringify(preferences)); }
+  const rememberedPreferences = Object.fromEntries(Object.entries(preferences).filter(([key]) => key === 'font'));
+  try { localStorage.setItem(COLOR_STORAGE_KEY, JSON.stringify(rememberedPreferences)); }
   catch (storageError) { console.warn('Terminal appearance could not be saved', { storageError }); }
 }
 
-/** Restore supported preferences without trusting stored CSS. @returns {object} */
+/** Restore the supported font without overriding the initial Matrix palette. @returns {object} */
 function restoreCustomAppearance() {
   try {
     const savedPreferences = JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY) || '{}');
-    const preferences = Object.fromEntries(Object.entries(savedPreferences).filter(([key, value]) => Object.hasOwn(CUSTOM_STYLE_PROPERTIES, key) && isAppearanceValueValid({ key, value })));
+    const preferences = Object.fromEntries(Object.entries(savedPreferences).filter(([key, value]) => key === 'font' && isAppearanceValueValid({ key, value })));
     applyCustomAppearance(preferences);
     return preferences;
   } catch (storageError) {
@@ -75,7 +76,7 @@ const COMMAND_HELP_LINES = Object.freeze([
     'Résumé: expand earlier experience or view the linked document.',
     'Tabs and theme pickers also work with mouse or keyboard.',
     '',
-    'CUSTOMIZE YOUR VIEW — saved in this browser',
+    'CUSTOMIZE YOUR VIEW — colors apply during this visit',
     'theme <name>           {themes}',
     'mode <name>            dark, navy, light (warm paper)',
     'bg midnightblue        background; alias: background',
@@ -89,6 +90,7 @@ const COMMAND_HELP_LINES = Object.freeze([
     'font Georgia           any locally available font family',
     'reset                  restore palette colors and font',
     'Theme/mode changes also reset custom styles.',
+    'Reload restores Matrix green; font and mode are remembered.',
     '',
     'TERMINAL',
     '/help or help          show this guide',
