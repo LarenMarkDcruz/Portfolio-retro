@@ -1,4 +1,4 @@
-const TYPING_WORDS_PER_MINUTE = 60;
+const TYPING_WORDS_PER_MINUTE = 120;
 const INTRO_GREETING_PREFIXES = Object.freeze([
   'Hey there, I’m',
   'Hello, I’m',
@@ -34,7 +34,9 @@ function prepareTypingLine(element) {
   const accessibleContent = element.innerText;
   const textWalker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
   const textNodes = [];
-  while (textWalker.nextNode()) textNodes.push(textWalker.currentNode);
+  while (textWalker.nextNode()) {
+    if (!textWalker.currentNode.parentElement.closest('.cursor')) textNodes.push(textWalker.currentNode);
+  }
   const replacements = textNodes.map(textNode => {
     const wrapper = document.createElement('span');
     wrapper.setAttribute('aria-hidden', 'true');
@@ -61,13 +63,15 @@ function prepareTypingLine(element) {
   };
 }
 
-/** Animate prepared lines together without moving surrounding content.
+/** Animate prepared lines in reading order without moving surrounding content.
  * @param {{lines: ReturnType<typeof prepareTypingLine>[], motionPreference: MediaQueryList}} options
  * @returns {void}
  */
 function animateTypingLines({ lines, motionPreference }) {
+  const characters = lines.flatMap(line => line.characters);
   let startedAt;
   let hasFinished = false;
+  let revealedCount = 0;
   const finishTyping = () => {
     hasFinished = true;
     lines.forEach(line => line.restore());
@@ -77,10 +81,11 @@ function animateTypingLines({ lines, motionPreference }) {
     if (hasFinished) return;
     startedAt ??= timestamp;
     const visibleCount = Math.floor((timestamp - startedAt) / CHARACTER_INTERVAL_IN_MILLISECONDS) + 1;
-    lines.forEach(line => line.characters.slice(0, visibleCount).forEach(character => {
-      character.classList.add('is-typed');
-    }));
-    if (lines.every(line => visibleCount >= line.characters.length)) return finishTyping();
+    characters[revealedCount - 1]?.classList.remove('typing-caret');
+    characters.slice(revealedCount, visibleCount).forEach(character => character.classList.add('is-typed'));
+    revealedCount = Math.min(visibleCount, characters.length);
+    characters[revealedCount - 1]?.classList.add('typing-caret');
+    if (visibleCount >= characters.length) return finishTyping();
     requestAnimationFrame(revealFrame);
   };
   motionPreference.addEventListener('change', finishTyping, { once: true });
@@ -100,7 +105,7 @@ export function createIntroTyping(homePanel) {
     if (hasPlayed || homePanel.hidden) return;
     hasPlayed = true;
     if (motionPreference.matches) return;
-    const lines = Array.from(homePanel.querySelectorAll('.eyebrow, .intro-greeting, h1, .lead'), prepareTypingLine);
+    const lines = Array.from(homePanel.querySelectorAll('.intro-comment, .cpp-namespace, .intro-greeting, h1, .lead, .intro-note'), prepareTypingLine);
     animateTypingLines({ lines, motionPreference });
   };
 }
