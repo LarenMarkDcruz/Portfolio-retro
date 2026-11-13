@@ -1,4 +1,4 @@
-const TYPING_WORDS_PER_MINUTE = 300;
+const TYPING_WORDS_PER_MINUTE = 900;
 const INTRO_GREETING_PREFIXES = Object.freeze([
   'Hey there, I’m',
   'Hello, I’m',
