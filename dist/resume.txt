@@ -22,7 +22,7 @@ Maintained and patched TruStar services using SaltStack, then completed service 
 Integrated backend infrastructure details into Slack notifications and GitLab CI jobs, reporting operational insights to improve engineering visibility.
 Resolved pre- and post-check pipeline failures blocking customer upgrades; optimize GitLab CI/CD jobs, security scans, and runners to improve release reliability.
 Perform root-cause analysis of production incidents, including race conditions and infrastructure failures; debug backend code and logs, fix issues within team ownership, and escalate to the relevant team to minimize upgrade downtime.
-Received an Outstanding Achievement Award from a Cisco/Splunk Vice President for Health App ownership, security remediation, and release-pipeline recovery.
+Received an Outstanding Achievement Award from a Cisco/Splunk Vice President for internal app ownership, security remediation, and release-pipeline recovery.
 
 Skip	Toronto, ON
 Software Developer (remote)	November 2022 - September 2024
