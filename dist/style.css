@@ -389,9 +389,6 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 }
 @media (prefers-contrast: more) { .ascii-sculpture pre { text-shadow: none; } }
 .sculpture-actions { display: flex; flex-wrap: wrap; gap: 16px; }
-.sculpture-intensity { display: flex; align-items: center; gap: 12px; width: 100%; }
-.sculpture-intensity input { flex: 1; min-width: 0; min-height: 44px; accent-color: var(--green); }
-.sculpture-intensity output { min-width: 4ch; text-align: right; }
 .sculpture-tone { display: block; position: absolute; inset: 0; pointer-events: none; }
 .sculpture-tone:first-child { position: relative; }
 .sculpture-tone-0 { color: color-mix(in srgb, var(--bg) 72%, var(--green)); }

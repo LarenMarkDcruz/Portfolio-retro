@@ -79,3 +79,13 @@ A brief section entrance and hover glows respect reduced-motion preferences. No 
 ## Random C++ motto
 
 `dist/focus_lines.js` contains 25 short C++ declarations. Every page load selects one at random and renders syntax-colored text. The motto stays still while reading. It works on the local server and static hosting without an API or backend. A refresh may select the same motto again.
+
+## Abstract ASCII sculpture
+
+Beyond code shows two warped, abstract bodies. They rotate independently, exchange sizes, merge through a smooth distance field, and separate again. Ray marching draws their shared surface, including the connecting neck and its lighting. Automatic framing keeps both bodies visible. Random reset changes their seed and starting position; pause freezes the current state. Contrast stays fixed at 225%, with no intensity slider.
+
+The animation pauses offscreen and respects reduced-motion preferences. No external services or dependencies are required. Run the geometry and rendering checks with:
+
+```sh
+node --test tests/sculpture_surfaces.test.mjs tests/sculpture_raymarcher.test.mjs
+```
