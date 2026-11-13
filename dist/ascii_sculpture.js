@@ -1,4 +1,4 @@
-import { createSculpturePattern, sampleSculptureSurface } from './sculpture_surfaces.js?v=procedural';
+import { createSculpturePattern, sampleSculptureSurface } from './sculpture_surfaces.js?v=continuous';
 
 const FRAME_COLUMNS = 104;
 const FRAME_ROWS = 64;
@@ -42,24 +42,20 @@ function projectSurface(surface, frame) {
   frame.characters[position] = group[Math.min(group.length - 1, Math.floor(texture * group.length))];
 }
 
-/** Render two independently evolving forms into one shared depth buffer.
+/** Render one connected sculpture with shared geometry, lighting, and motion.
  * @param {{time: number, variation: number, intensity?: number}} options
  * @returns {{characters: string[], tones: Uint8Array}}
  */
-function renderSculptureFrame({ time, variation, intensity = 1.35 }) {
+function renderSculptureFrame({ time, variation, intensity = 2.25 }) {
   const frame = { characters: Array(FRAME_COLUMNS * FRAME_ROWS).fill(' '),
     depths: new Float32Array(FRAME_COLUMNS * FRAME_ROWS).fill(-Infinity),
     tones: new Uint8Array(FRAME_COLUMNS * FRAME_ROWS), intensity };
-  for (let shape = 0; shape < 2; shape++) {
-    const shapeTime = time + shape * 17;
-    const pattern = createSculpturePattern(variation + shape * 1.618);
-    const surfaceFrame = { ...frame, scale: shape === 0 ? 0.72 : 0.57,
-      offset: shape === 0 ? [-0.65, 0.48, 0] : [0.8, -0.65, 0.25],
-      angles: [Math.sin(shapeTime * 0.13 + variation) * 0.4, shapeTime * 0.22 + variation + shape] };
-    for (let longitude = 0; longitude < FULL_ROTATION_IN_RADIANS; longitude += 0.035) {
-      for (let latitude = 0; latitude < FULL_ROTATION_IN_RADIANS; latitude += 0.065) {
-        projectSurface(sampleSculptureSurface({ longitude, latitude, time: shapeTime, pattern }), surfaceFrame);
-      }
+  const pattern = createSculpturePattern(variation);
+  const surfaceFrame = { ...frame, scale: 0.86, offset: [0, 0, 0],
+    angles: [Math.sin(time * 0.13 + variation) * 0.55, time * 0.18 + variation] };
+  for (let longitude = 0; longitude < FULL_ROTATION_IN_RADIANS; longitude += 0.025) {
+    for (let latitude = 0; latitude < FULL_ROTATION_IN_RADIANS; latitude += 0.055) {
+      projectSurface(sampleSculptureSurface({ longitude, latitude, time, pattern }), surfaceFrame);
     }
   }
   return frame;
@@ -173,7 +169,7 @@ function observeSculpturePlayback({ artwork, button, state, synchronizePlayback,
   synchronizePlayback();
 }
 
-/** Randomize both forms without changing pause state or the chosen lighting.
+/** Randomize the connected form without changing playback or chosen lighting.
  * @param {object} controls
  * @returns {void}
  */

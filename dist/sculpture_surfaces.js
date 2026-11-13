@@ -1,93 +1,75 @@
-const SHAPE_DURATION_IN_SECONDS = 12;
-const SHAPE_COUNT = 4;
+const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 const NORMAL_SAMPLE_OFFSET = 0.002;
 
-/** Derive a repeatable family of organic shapes from one random seed.
+/** Derive repeatable proportions for one continuous, abstract surface.
  * @param {number} seed
- * @returns {{lobes: number, ripple: number, twist: number, stretch: number, phase: number}}
+ * @returns {{lobes: number, ripple: number, thickness: number, stretch: number, phase: number}}
  */
 export function createSculpturePattern(seed) {
   const randomAt = position => {
     const value = Math.sin(seed * 127.1 + position * 311.7) * 43758.5453;
     return value - Math.floor(value);
   };
-  return { lobes: 2 + Math.floor(randomAt(1) * 5), ripple: 0.04 + randomAt(2) * 0.16,
-    twist: (randomAt(3) - 0.5) * 0.8, stretch: 0.85 + randomAt(4) * 0.3,
-    phase: randomAt(5) * Math.PI * 2 };
+  return { lobes: 2 + Math.floor(randomAt(1) * 2), ripple: 0.12 + randomAt(2) * 0.16,
+    thickness: 0.25 + randomAt(3) * 0.1, stretch: 0.85 + randomAt(4) * 0.25,
+    phase: randomAt(5) * FULL_ROTATION_IN_RADIANS };
 }
 
-/** Apply related waves and twists while keeping the underlying form readable.
- * @param {{point: number[], longitude: number, shape: number, pattern?: object}} surface
+/** Follow a closed, undulating path whose lobes evolve together.
+ * @param {{longitude: number, time: number, pattern: object}} sample
  * @returns {number[]}
  */
-function shapeProceduralVariation({ point, longitude, shape, pattern }) {
-  if (!pattern) return point;
-  const strength = shape === 0 ? 0.2 : 1;
-  const wave = 1 + pattern.ripple * Math.sin(longitude * pattern.lobes + pattern.phase) * strength;
-  const twist = point[1] * pattern.twist * strength;
-  return [(point[0] * Math.cos(twist) - point[2] * Math.sin(twist)) * wave,
-    point[1] * pattern.stretch,
-    (point[2] * Math.cos(twist) + point[0] * Math.sin(twist)) * wave];
+function sampleLoopCenter({ longitude, time, pattern }) {
+  const breathing = Math.sin(time * 0.17 + pattern.phase);
+  const radius = 1 + pattern.ripple * Math.cos(longitude * pattern.lobes + time * 0.12 + pattern.phase);
+  return [Math.cos(longitude) * radius,
+    Math.sin(longitude) * radius * pattern.stretch,
+    (0.25 + breathing * 0.13) * Math.sin(longitude * 2 + time * 0.09 + pattern.phase)];
 }
 
-/** Sculpt a cranium, eye sockets, nose, and a narrow toothed jaw.
- * @param {{longitude: number, latitude: number}} sample
+/** Calculate a stable perpendicular frame around the closed curve.
+ * @param {{longitude: number, time: number, pattern: object}} sample
+ * @returns {{center: number[], outward: number[], across: number[]}}
+ */
+function sampleLoopFrame(sample) {
+  const center = sampleLoopCenter(sample);
+  const neighbor = sampleLoopCenter({ ...sample, longitude: sample.longitude + NORMAL_SAMPLE_OFFSET });
+  const direction = neighbor.map((coordinate, index) => coordinate - center[index]);
+  const directionLength = Math.hypot(...direction);
+  const tangent = direction.map(coordinate => coordinate / directionLength);
+  const radial = [Math.cos(sample.longitude), Math.sin(sample.longitude), 0];
+  const projection = radial.reduce((total, coordinate, index) => total + coordinate * tangent[index], 0);
+  const perpendicular = radial.map((coordinate, index) => coordinate - projection * tangent[index]);
+  const perpendicularLength = Math.hypot(...perpendicular);
+  const outward = perpendicular.map(coordinate => coordinate / perpendicularLength);
+  const across = [outward[1] * tangent[2] - outward[2] * tangent[1],
+    outward[2] * tangent[0] - outward[0] * tangent[2], outward[0] * tangent[1] - outward[1] * tangent[0]];
+  return { center, outward, across };
+}
+
+/** Sweep a swelling tube around the curve, preserving a connected surface.
+ * @param {{longitude: number, latitude: number, time: number, pattern: object}} sample
  * @returns {number[]}
  */
-function sampleSkull({ longitude, latitude }) {
-  const elevation = latitude / 2 - Math.PI / 2;
-  const height = Math.sin(elevation);
-  const jawWidth = height < -0.15 ? 0.66 + (height + 1) * 0.3 : 1;
-  const horizontal = Math.sin(longitude) * Math.cos(elevation) * jawWidth;
-  const vertical = height * 1.45;
-  let depth = Math.cos(longitude) * Math.cos(elevation) * 0.87;
-  if (depth <= 0) return [horizontal, vertical, depth];
-  const eyeSockets = Math.exp(-Math.pow((Math.abs(horizontal) - 0.43) / 0.22, 2) - Math.pow((vertical - 0.22) / 0.27, 2));
-  const nose = Math.exp(-Math.pow(horizontal / 0.14, 2) - Math.pow((vertical + 0.17) / 0.23, 2));
-  const mouth = Math.exp(-Math.pow(horizontal / 0.54, 6) - Math.pow((vertical + 0.65) / 0.085, 2));
-  const teeth = Math.cos(horizontal * 36) * 0.07 * Math.exp(-Math.pow((vertical + 0.8) / 0.14, 2));
-  depth -= eyeSockets * 0.72 + nose * 0.5 + mouth * 0.24 + teeth;
-  return [horizontal, vertical, depth];
+function sampleContinuousPoint(sample) {
+  const { longitude, latitude, time, pattern } = sample;
+  const { center, outward, across } = sampleLoopFrame(sample);
+  const swelling = 1 + 0.3 * Math.cos(longitude * 2 - time * 0.2 + pattern.phase);
+  const thickness = pattern.thickness * swelling;
+  const flattening = 0.85 + 0.15 * Math.sin(time * 0.13 + pattern.phase);
+  return center.map((coordinate, index) => coordinate + thickness *
+    (Math.cos(latitude) * outward[index] + Math.sin(latitude) * across[index] * flattening));
 }
 
-/** Sample related ring, infinity, and rippling orbital surfaces.
- * @param {{longitude: number, latitude: number, shape: number}} sample
- * @returns {number[]}
- */
-function sampleOrbit({ longitude, latitude, shape }) {
-  const fold = shape === 2 ? 1 : 0;
-  const ripple = shape === 3 ? Math.sin(longitude * 3) * 0.25 : 0;
-  const radius = 0.4 + ripple;
-  return [Math.cos(longitude) * (1.1 + radius * Math.cos(latitude)),
-    1.1 * Math.sin(longitude) * (1 - fold + fold * Math.cos(longitude)) + radius * Math.sin(longitude) * Math.cos(latitude),
-    fold * 0.55 * Math.sin(longitude) + radius * Math.sin(latitude)];
-}
-
-/** Blend between four forms, holding each briefly before its next transition.
- * @param {{longitude: number, latitude: number, time: number, pattern?: object}} sample
- * @returns {number[]}
- */
-function sampleMorphingPoint({ longitude, latitude, time, pattern }) {
-  const progress = ((time / SHAPE_DURATION_IN_SECONDS) % SHAPE_COUNT + SHAPE_COUNT) % SHAPE_COUNT;
-  const shape = Math.floor(progress);
-  const transition = Math.max(0, (progress - shape - 0.45) / 0.55);
-  const blend = transition * transition * (3 - 2 * transition);
-  const nextShape = (shape + 1) % SHAPE_COUNT;
-  const current = shape === 0 ? sampleSkull({ longitude, latitude }) : sampleOrbit({ longitude, latitude, shape });
-  const next = nextShape === 0 ? sampleSkull({ longitude, latitude }) : sampleOrbit({ longitude, latitude, shape: nextShape });
-  const currentVariation = shapeProceduralVariation({ point: current, longitude, shape, pattern });
-  const nextVariation = shapeProceduralVariation({ point: next, longitude, shape: nextShape, pattern });
-  return currentVariation.map((coordinate, index) => coordinate * (1 - blend) + nextVariation[index] * blend);
-}
-
-/** Calculate surface normals from the same geometry used to draw each form.
+/** Calculate lighting normals from the same continuous geometry being drawn.
  * @param {{longitude: number, latitude: number, time: number, pattern?: object}} sample
  * @returns {{point: number[], normal: number[]}}
  */
 export function sampleSculptureSurface(sample) {
-  const point = sampleMorphingPoint(sample);
-  const longitudeNeighbor = sampleMorphingPoint({ ...sample, longitude: sample.longitude + NORMAL_SAMPLE_OFFSET });
-  const latitudeNeighbor = sampleMorphingPoint({ ...sample, latitude: sample.latitude + NORMAL_SAMPLE_OFFSET });
+  const configuredSample = { ...sample, pattern: sample.pattern ?? createSculpturePattern(0) };
+  const point = sampleContinuousPoint(configuredSample);
+  const longitudeNeighbor = sampleContinuousPoint({ ...configuredSample, longitude: sample.longitude + NORMAL_SAMPLE_OFFSET });
+  const latitudeNeighbor = sampleContinuousPoint({ ...configuredSample, latitude: sample.latitude + NORMAL_SAMPLE_OFFSET });
   const across = longitudeNeighbor.map((coordinate, index) => coordinate - point[index]);
   const down = latitudeNeighbor.map((coordinate, index) => coordinate - point[index]);
   const normal = [across[1] * down[2] - across[2] * down[1],

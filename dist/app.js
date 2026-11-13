@@ -1,7 +1,7 @@
 import { initializeTerminal } from './terminal.js';
 import { renderFocusLine, selectFocusLine } from './focus_lines.js';
 import { createIntroTyping } from './intro_typing.js?v=cursor-at-end';
-import { initializeAsciiSculpture } from './ascii_sculpture.js?v=procedural';
+import { initializeAsciiSculpture } from './ascii_sculpture.js?v=continuous';
 
 const playIntroTyping = createIntroTyping(document.querySelector('#home'));
 
