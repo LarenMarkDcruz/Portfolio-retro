@@ -2,6 +2,34 @@ const SHAPE_DURATION_IN_SECONDS = 12;
 const SHAPE_COUNT = 4;
 const NORMAL_SAMPLE_OFFSET = 0.002;
 
+/** Derive a repeatable family of organic shapes from one random seed.
+ * @param {number} seed
+ * @returns {{lobes: number, ripple: number, twist: number, stretch: number, phase: number}}
+ */
+export function createSculpturePattern(seed) {
+  const randomAt = position => {
+    const value = Math.sin(seed * 127.1 + position * 311.7) * 43758.5453;
+    return value - Math.floor(value);
+  };
+  return { lobes: 2 + Math.floor(randomAt(1) * 5), ripple: 0.04 + randomAt(2) * 0.16,
+    twist: (randomAt(3) - 0.5) * 0.8, stretch: 0.85 + randomAt(4) * 0.3,
+    phase: randomAt(5) * Math.PI * 2 };
+}
+
+/** Apply related waves and twists while keeping the underlying form readable.
+ * @param {{point: number[], longitude: number, shape: number, pattern?: object}} surface
+ * @returns {number[]}
+ */
+function shapeProceduralVariation({ point, longitude, shape, pattern }) {
+  if (!pattern) return point;
+  const strength = shape === 0 ? 0.2 : 1;
+  const wave = 1 + pattern.ripple * Math.sin(longitude * pattern.lobes + pattern.phase) * strength;
+  const twist = point[1] * pattern.twist * strength;
+  return [(point[0] * Math.cos(twist) - point[2] * Math.sin(twist)) * wave,
+    point[1] * pattern.stretch,
+    (point[2] * Math.cos(twist) + point[0] * Math.sin(twist)) * wave];
+}
+
 /** Sculpt a cranium, eye sockets, nose, and a narrow toothed jaw.
  * @param {{longitude: number, latitude: number}} sample
  * @returns {number[]}
@@ -36,10 +64,10 @@ function sampleOrbit({ longitude, latitude, shape }) {
 }
 
 /** Blend between four forms, holding each briefly before its next transition.
- * @param {{longitude: number, latitude: number, time: number}} sample
+ * @param {{longitude: number, latitude: number, time: number, pattern?: object}} sample
  * @returns {number[]}
  */
-function sampleMorphingPoint({ longitude, latitude, time }) {
+function sampleMorphingPoint({ longitude, latitude, time, pattern }) {
   const progress = ((time / SHAPE_DURATION_IN_SECONDS) % SHAPE_COUNT + SHAPE_COUNT) % SHAPE_COUNT;
   const shape = Math.floor(progress);
   const transition = Math.max(0, (progress - shape - 0.45) / 0.55);
@@ -47,11 +75,13 @@ function sampleMorphingPoint({ longitude, latitude, time }) {
   const nextShape = (shape + 1) % SHAPE_COUNT;
   const current = shape === 0 ? sampleSkull({ longitude, latitude }) : sampleOrbit({ longitude, latitude, shape });
   const next = nextShape === 0 ? sampleSkull({ longitude, latitude }) : sampleOrbit({ longitude, latitude, shape: nextShape });
-  return current.map((coordinate, index) => coordinate * (1 - blend) + next[index] * blend);
+  const currentVariation = shapeProceduralVariation({ point: current, longitude, shape, pattern });
+  const nextVariation = shapeProceduralVariation({ point: next, longitude, shape: nextShape, pattern });
+  return currentVariation.map((coordinate, index) => coordinate * (1 - blend) + nextVariation[index] * blend);
 }
 
 /** Calculate surface normals from the same geometry used to draw each form.
- * @param {{longitude: number, latitude: number, time: number}} sample
+ * @param {{longitude: number, latitude: number, time: number, pattern?: object}} sample
  * @returns {{point: number[], normal: number[]}}
  */
 export function sampleSculptureSurface(sample) {

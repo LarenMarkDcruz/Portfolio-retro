@@ -380,7 +380,7 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 .beyond-interests { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: center; }
 .beyond-interests .interests-list { margin: 0; }
 .ascii-sculpture { min-width: 0; margin: 0; container-type: inline-size; }
-.ascii-sculpture pre { margin: 0; overflow: hidden; color: var(--green); font: 500 clamp(4px, 1.55cqw, 10px)/1.08 'Source Code Pro', monospace; white-space: pre; text-shadow: none; }
+.ascii-sculpture pre { position: relative; margin: 0; overflow: hidden; color: var(--green); font: 500 clamp(4px, 1.55cqw, 10px)/1.08 'Source Code Pro', monospace; white-space: pre; text-shadow: none; }
 .ascii-sculpture figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 13px; }
 .ascii-sculpture button { min-height: 44px; }
 @media (max-width: 900px) {
@@ -388,3 +388,18 @@ body[data-appearance=navy] { --bg: #0f0f23; }
   .ascii-sculpture { width: 100%; max-width: 540px; justify-self: center; }
 }
 @media (prefers-contrast: more) { .ascii-sculpture pre { text-shadow: none; } }
+.sculpture-actions { display: flex; flex-wrap: wrap; gap: 16px; }
+.sculpture-intensity { display: flex; align-items: center; gap: 12px; width: 100%; }
+.sculpture-intensity input { flex: 1; min-width: 0; min-height: 44px; accent-color: var(--green); }
+.sculpture-intensity output { min-width: 4ch; text-align: right; }
+.sculpture-tone { display: block; position: absolute; inset: 0; pointer-events: none; }
+.sculpture-tone:first-child { position: relative; }
+.sculpture-tone-0 { color: color-mix(in srgb, var(--bg) 72%, var(--green)); }
+.sculpture-tone-1 { color: color-mix(in srgb, var(--bg) 50%, var(--green)); }
+.sculpture-tone-2 { color: color-mix(in srgb, var(--bg) 22%, var(--green)); }
+.sculpture-tone-3 { color: var(--green); }
+.sculpture-tone-4 { color: var(--bright); }
+.sculpture-tone-5 { color: color-mix(in srgb, var(--bright) 70%, white); }
+.sculpture-tone-6 { color: color-mix(in srgb, var(--bright) 25%, white); text-shadow: 0 0 var(--sculpture-glow, 2px) var(--glow); }
+body[data-appearance=light] .sculpture-tone-5, body[data-appearance=light] .sculpture-tone-6 { color: var(--bright); text-shadow: none; }
+@media (prefers-contrast: more) { .sculpture-tone { color: var(--text); text-shadow: none; } }

@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="terminal_icon.svg">
 <link rel="preload" href="SourceCodePro-300.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="SourceCodePro-Medium.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="stylesheet" href="style.css?v=sculpture-forms">
+<link rel="stylesheet" href="style.css?v=dual-forms">
 </head>
 <body data-theme="matrix" data-appearance="dark">
 <a class="skip" href="#main">Skip to content</a>
@@ -105,7 +105,7 @@
   \   '--'   /
    '.      .'
      '-..-'</pre>
-<figcaption><span>// curiosity has no final form.</span><button id="sculpture-motion" type="button" aria-pressed="false" aria-label="Pause ASCII sculpture animation" hidden>[pause]</button></figcaption>
+<figcaption><span>// curiosity has no final form.</span><div class="sculpture-actions"><button id="sculpture-reset" type="button">[random reset]</button><button id="sculpture-motion" type="button" aria-pressed="false" aria-label="Pause ASCII sculpture animation" hidden>[pause]</button></div><label class="sculpture-intensity" for="sculpture-intensity">Intensity <input id="sculpture-intensity" type="range" min="0.5" max="2.5" step="0.05" value="1.35"><output id="sculpture-intensity-value" for="sculpture-intensity">135%</output></label></figcaption>
 </figure>
 </div>
 <p>Have an idea, a music recommendation, or something you’re building? Let’s talk.</p>
@@ -124,5 +124,5 @@
 </div>
 </aside>
 
-</div><script type="module" src="app.js?v=sculpture-forms"></script>
+</div><script type="module" src="app.js?v=procedural"></script>
 </body></html>

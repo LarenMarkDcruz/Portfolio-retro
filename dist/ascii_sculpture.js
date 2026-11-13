@@ -1,8 +1,8 @@
-import { sampleSculptureSurface } from './sculpture_surfaces.js';
+import { createSculpturePattern, sampleSculptureSurface } from './sculpture_surfaces.js?v=procedural';
 
 const FRAME_COLUMNS = 104;
 const FRAME_ROWS = 64;
-const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 24;
+const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 20;
 const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!', 'i|()[]', 'tszvcr', '2345XY', 'GKZB8M', 'W%#@']);
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 
@@ -24,7 +24,8 @@ function rotatePoint([horizontal, vertical, depth], [pitch, yaw]) {
  * @returns {void}
  */
 function projectSurface(surface, frame) {
-  const [horizontal, vertical, depth] = rotatePoint(surface.point, frame.angles);
+  const rotated = rotatePoint(surface.point, frame.angles);
+  const [horizontal, vertical, depth] = rotated.map((coordinate, index) => coordinate * frame.scale + frame.offset[index]);
   const projectionScale = 5 / (5 - depth);
   const column = Math.round(FRAME_COLUMNS / 2 + horizontal * projectionScale * 25);
   const row = Math.round(FRAME_ROWS / 2 - vertical * projectionScale * 17);
@@ -33,39 +34,85 @@ function projectSurface(surface, frame) {
   if (depth <= frame.depths[position]) return;
   const [normalHorizontal, normalVertical, normalDepth] = rotatePoint(surface.normal, frame.angles);
   const light = Math.max(0, normalHorizontal * -0.4 + normalVertical * 0.55 + normalDepth * 0.7);
-  const group = SHADE_GROUPS[Math.min(SHADE_GROUPS.length - 1, Math.floor(light * SHADE_GROUPS.length))];
+  const tone = Math.min(SHADE_GROUPS.length - 1, Math.floor(Math.pow(light, frame.intensity) * SHADE_GROUPS.length));
+  const group = SHADE_GROUPS[tone];
   const texture = Math.abs(Math.sin(surface.point[0] * 127 + surface.point[1] * 311 + surface.point[2] * 73));
+  frame.tones[position] = tone;
   frame.depths[position] = depth;
   frame.characters[position] = group[Math.min(group.length - 1, Math.floor(texture * group.length))];
 }
 
-/** Render one deterministic ASCII frame; time is measured in seconds.
- * @param {{time: number, variation: number}} options
- * @returns {string}
+/** Render two independently evolving forms into one shared depth buffer.
+ * @param {{time: number, variation: number, intensity?: number}} options
+ * @returns {{characters: string[], tones: Uint8Array}}
  */
-export function renderAsciiSculpture({ time, variation }) {
+function renderSculptureFrame({ time, variation, intensity = 1.35 }) {
   const frame = { characters: Array(FRAME_COLUMNS * FRAME_ROWS).fill(' '),
     depths: new Float32Array(FRAME_COLUMNS * FRAME_ROWS).fill(-Infinity),
-    angles: [Math.sin(time * 0.13 + variation) * 0.35, time * 0.22 + variation] };
-  for (let longitude = 0; longitude < FULL_ROTATION_IN_RADIANS; longitude += 0.025) {
-    for (let latitude = 0; latitude < FULL_ROTATION_IN_RADIANS; latitude += 0.05) {
-      projectSurface(sampleSculptureSurface({ longitude, latitude, time }), frame);
+    tones: new Uint8Array(FRAME_COLUMNS * FRAME_ROWS), intensity };
+  for (let shape = 0; shape < 2; shape++) {
+    const shapeTime = time + shape * 17;
+    const pattern = createSculpturePattern(variation + shape * 1.618);
+    const surfaceFrame = { ...frame, scale: shape === 0 ? 0.72 : 0.57,
+      offset: shape === 0 ? [-0.65, 0.48, 0] : [0.8, -0.65, 0.25],
+      angles: [Math.sin(shapeTime * 0.13 + variation) * 0.4, shapeTime * 0.22 + variation + shape] };
+    for (let longitude = 0; longitude < FULL_ROTATION_IN_RADIANS; longitude += 0.035) {
+      for (let latitude = 0; latitude < FULL_ROTATION_IN_RADIANS; latitude += 0.065) {
+        projectSurface(sampleSculptureSurface({ longitude, latitude, time: shapeTime, pattern }), surfaceFrame);
+      }
     }
   }
+  return frame;
+}
+
+/** Format a fixed-width buffer without changing its alignment.
+ * @param {string[]} characters
+ * @returns {string}
+ */
+function formatCharacterRows(characters) {
   return Array.from({ length: FRAME_ROWS }, (_, row) =>
-    frame.characters.slice(row * FRAME_COLUMNS, (row + 1) * FRAME_COLUMNS).join('')).join('\n');
+    characters.slice(row * FRAME_COLUMNS, (row + 1) * FRAME_COLUMNS).join('')).join('\n');
+}
+
+/** Render a deterministic plain-text snapshot for a given time and intensity.
+ * @param {{time: number, variation: number, intensity?: number}} options
+ * @returns {string}
+ */
+export function renderAsciiSculpture(options) {
+  return formatCharacterRows(renderSculptureFrame(options).characters);
+}
+
+/** Update seven reusable text layers with actual highlight and shadow colors.
+ * @param {{artwork: HTMLElement, state: object}} options
+ * @returns {void}
+ */
+function drawSculpture({ artwork, state }) {
+  const frame = renderSculptureFrame(state);
+  if (!artwork.firstElementChild) {
+    artwork.textContent = '';
+    for (let tone = 0; tone < SHADE_GROUPS.length; tone++) {
+      const layer = document.createElement('span');
+      layer.className = `sculpture-tone sculpture-tone-${tone}`;
+      artwork.append(layer);
+    }
+  }
+  Array.from(artwork.children).forEach((layer, tone) => {
+    layer.textContent = formatCharacterRows(frame.characters.map((character, index) =>
+      frame.tones[index] === tone ? character : ' '));
+  });
+  artwork.style.setProperty('--sculpture-glow', `${state.intensity * 1.5}px`);
 }
 
 /** Build a frame callback around an isolated playback state.
- * @param {{artwork: HTMLElement, state: object, variation: number}} options
+ * @param {{artwork: HTMLElement, state: object}} options
  * @returns {(timestamp: number) => void}
  */
-function createFrameRenderer({ artwork, state, variation }) {
+function createFrameRenderer({ artwork, state }) {
   const drawFrame = timestamp => {
     const elapsed = timestamp - state.lastFrame;
     if (elapsed >= FRAME_INTERVAL_IN_MILLISECONDS) {
       state.time += Math.min(elapsed, 100) / 1000;
-      artwork.textContent = renderAsciiSculpture({ time: state.time, variation });
+      drawSculpture({ artwork, state });
       state.lastFrame = timestamp;
     }
     state.frameRequest = requestAnimationFrame(drawFrame);
@@ -93,17 +140,18 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
 }
 
 /** Keep animation work scoped to a visible, unpaused sculpture.
- * @param {{artwork: HTMLElement, button: HTMLButtonElement}} elements
+ * @param {{artwork: HTMLElement, button: HTMLButtonElement, resetButton: HTMLButtonElement, intensityInput: HTMLInputElement, intensityOutput: HTMLOutputElement}} elements
  * @returns {void}
  */
-export function initializeAsciiSculpture({ artwork, button }) {
+export function initializeAsciiSculpture({ artwork, button, resetButton, intensityInput, intensityOutput }) {
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const variation = Math.random() * FULL_ROTATION_IN_RADIANS;
-  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, time: Math.random() * 48 };
-  const drawFrame = createFrameRenderer({ artwork, state, variation });
+  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, time: Math.random() * 48,
+    variation: Math.random() * FULL_ROTATION_IN_RADIANS, intensity: Number(intensityInput.value) };
+  const drawFrame = createFrameRenderer({ artwork, state });
   const synchronizePlayback = createPlaybackSynchronizer({ button, state, motionPreference, drawFrame });
-  artwork.textContent = renderAsciiSculpture({ time: state.time, variation });
+  drawSculpture({ artwork, state });
   observeSculpturePlayback({ artwork, button, state, synchronizePlayback, motionPreference });
+  connectSculptureControls({ artwork, state, resetButton, intensityInput, intensityOutput });
 }
 
 /** Connect visibility, motion preferences, and the optional pause control.
@@ -123,4 +171,21 @@ function observeSculpturePlayback({ artwork, button, state, synchronizePlayback,
   document.addEventListener('visibilitychange', synchronizePlayback);
   motionPreference.addEventListener('change', synchronizePlayback);
   synchronizePlayback();
+}
+
+/** Randomize both forms without changing pause state or the chosen lighting.
+ * @param {object} controls
+ * @returns {void}
+ */
+function connectSculptureControls({ artwork, state, resetButton, intensityInput, intensityOutput }) {
+  resetButton.addEventListener('click', () => {
+    state.time = Math.random() * 48;
+    state.variation = Math.random() * FULL_ROTATION_IN_RADIANS;
+    drawSculpture({ artwork, state });
+  });
+  intensityInput.addEventListener('input', () => {
+    state.intensity = Number(intensityInput.value);
+    intensityOutput.value = `${Math.round(state.intensity * 100)}%`;
+    drawSculpture({ artwork, state });
+  });
 }
