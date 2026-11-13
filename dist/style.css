@@ -287,10 +287,7 @@ body:is([data-appearance=dark], [data-appearance=navy])[data-theme=rose] { --gre
 h1 { font-size: clamp(52px, 5.4vw, 100px); line-height: 1.12; }
 .intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .intro-identity { align-self: center; }
-.terminal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px 0; font-size: 15px; }
-.terminal-toolbar input { width: min(220px, 45vw); min-height: 44px; accent-color: var(--green); }
-.terminal-toolbar button { min-height: 44px; }
-.terminal-content { height: 320px; min-height: 200px; max-height: 720px; overflow: auto; resize: vertical; padding: 12px 16px; border: 1px solid var(--line); background: var(--bg); scrollbar-color: var(--dim) var(--bg); }
+.terminal-content { height: 28svh; min-height: 180px; overflow: hidden; resize: none; display: flex; flex-direction: column; padding: 12px 16px; border: 1px solid var(--line); background: var(--bg); scrollbar-color: var(--dim) var(--bg); }
 .terminal-content > p { margin: 0 0 16px; }
 #terminal-output p { border-left: 1px solid var(--line); padding-left: 12px; }
 .terminal input { color: var(--text); }
@@ -305,9 +302,13 @@ h1 { font-size: clamp(52px, 5.4vw, 100px); line-height: 1.12; }
 @media (max-width: 600px) {
   h1 { font-size: clamp(40px, 12vw, 68px); }
   .terminal-content { padding: 12px; }
-  .terminal-toolbar { gap: 4px 12px; }
 }
 
 /* Solid surfaces keep the terminal calm in every display mode. */
 body { background-image: none; }
 body[data-appearance=navy] { --bg: #0f0f23; }
+
+.terminal-content > p { flex: none; font-size: 15px; }
+#terminal-output { flex: 1; min-height: 0; overflow-y: auto; overflow-wrap: anywhere; }
+.terminal form { flex: none; flex-wrap: nowrap; }
+.terminal form label { flex-basis: auto; white-space: nowrap; }

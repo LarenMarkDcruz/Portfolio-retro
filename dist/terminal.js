@@ -1,5 +1,5 @@
 const SECTION_NAMES = ['home', 'skills', 'resume', 'work', 'contact'];
-const COMMAND_NAMES = ['help', 'ls', 'pwd', 'cd', 'open', 'theme', 'mode', 'bg', 'fg', 'reset', 'size', 'history', 'whoami', 'clear'];
+const COMMAND_NAMES = ['help', '/help', 'ls', 'pwd', 'cd', 'open', 'theme', 'mode', 'bg', 'fg', 'reset', 'history', 'whoami', 'clear'];
 const MAXIMUM_HISTORY_ENTRIES = 100;
 const COLOR_STORAGE_KEY = 'portfolio-terminal-colors';
 
@@ -56,7 +56,7 @@ function describeCommands(themes) {
     'ls · pwd · cd <section> · open <section|github|linkedin|resume>',
     `theme <${themes.join('|')}> · mode <dark|navy|light>`,
     'bg #101018 · fg #eeeeee · reset (restore palette colors)',
-    'size <compact|normal|large> · history · whoami · clear',
+    '/help (or help) · history · whoami · clear',
     '↑↓ command history · Tab complete · Ctrl+L clear · Ctrl+C cancel',
     'Sections: home, skills, resume, work, contact. cd .. returns home.',
   ].join('\n');
@@ -105,25 +105,15 @@ function changeCustomColor({ command, value, state }) {
   return `${command === 'bg' ? 'Background' : 'Foreground'} set to ${value}. Use reset to restore the palette.`;
 }
 
-/** Resize the terminal without moving it from the document flow. @param {string} size @returns {string} */
-function changeTerminalSize(size) {
-  const heightBySize = { compact: 200, normal: 320, large: 560 };
-  if (!heightBySize[size]) return 'Usage: size compact|normal|large';
-  document.querySelector('.terminal-content').style.height = `${heightBySize[size]}px`;
-  document.querySelector('#terminal-height').value = heightBySize[size];
-  return `Terminal size: ${size}.`;
-}
-
 /** Execute navigation and display commands. @param {object} request @returns {string} */
 function executeCommand({ line, state, dependencies }) {
   const [command, ...argumentsList] = line.toLowerCase().split(/\s+/);
   const value = argumentsList.join(' ');
-  if (command === 'help') return describeCommands(dependencies.themes);
+  if (['help', '/help'].includes(command)) return describeCommands(dependencies.themes);
   if (command === 'ls') return SECTION_NAMES.map(section => `${section}/`).join('  ');
   if (command === 'pwd') return `/${document.querySelector('#current-path').textContent}`;
   if (command === 'history') return state.history.map((entry, index) => `${index + 1}  ${entry}`).join('\n');
   if (command === 'whoami') return 'Laren Mark D’Cruz — Backend Engineer / Site Reliability Engineer. Cisco/Splunk. Victoria, BC.';
-  if (command === 'size') return changeTerminalSize(value);
   if (['bg', 'fg'].includes(command)) return changeCustomColor({ command, value, state });
   if (command === 'reset') { resetCustomColors(state); return 'Custom colors reset.'; }
   if (['theme', 'mode'].includes(command)) return changeDisplaySelection({ selector: command === 'theme' ? '#theme' : '#appearance', value, choices: command === 'theme' ? dependencies.themes : ['dark', 'navy', 'light'] });
@@ -135,7 +125,7 @@ function executeCommand({ line, state, dependencies }) {
 /** Complete known commands and their supported arguments. @param {object} context @returns {void} */
 function completeInput({ input, output, themes }) {
   const words = input.value.toLowerCase().split(/\s+/);
-  const argumentChoices = { cd: SECTION_NAMES, open: [...SECTION_NAMES, 'github', 'linkedin'], theme: themes, mode: ['dark', 'navy', 'light'], size: ['compact', 'normal', 'large'] };
+  const argumentChoices = { cd: SECTION_NAMES, open: [...SECTION_NAMES, 'github', 'linkedin'], theme: themes, mode: ['dark', 'navy', 'light'] };
   const choices = words.length === 1 ? COMMAND_NAMES : argumentChoices[words[0]] || [];
   const matches = choices.filter(choice => choice.startsWith(words.at(-1)));
   if (matches.length === 1) { words[words.length - 1] = matches[0]; input.value = words.join(' '); }
@@ -148,7 +138,7 @@ function appendOutput({ output, line, message }) {
   entry.textContent = `$ ${line}\n${message}`;
   output.append(entry);
   while (output.children.length > MAXIMUM_HISTORY_ENTRIES) output.firstElementChild.remove();
-  entry.scrollIntoView({ block: 'nearest' });
+  output.scrollTop = output.scrollHeight;
 }
 
 /** Add command history and familiar keyboard shortcuts. @param {object} context @returns {void} */
@@ -170,26 +160,12 @@ function bindTerminalKeyboard(context) {
   });
 }
 
-/** Wire accessible height controls alongside native drag resizing. @returns {void} */
-function bindTerminalResizing() {
-  const heightControl = document.querySelector('#terminal-height');
-  heightControl.addEventListener('input', () => {
-    document.querySelector('.terminal-content').style.height = `${heightControl.value}px`;
-  });
-  document.querySelector('#terminal-reset').addEventListener('click', () => changeTerminalSize('normal'));
-  const observer = new ResizeObserver(entries => {
-    heightControl.value = Math.round(entries[0].target.getBoundingClientRect().height);
-  });
-  observer.observe(document.querySelector('.terminal-content'));
-}
-
 /** Initialize the website terminal with replaceable routing dependencies. @param {object} dependencies @returns {void} */
 export function initializeTerminal(dependencies) {
   const output = document.querySelector('#terminal-output');
   const input = document.querySelector('#terminal-input');
   const state = { history: [], historyIndex: 0, draft: '', colors: restoreCustomColors() };
   bindTerminalKeyboard({ input, output, state, themes: dependencies.themes });
-  bindTerminalResizing();
   for (const selector of ['#theme', '#appearance']) document.querySelector(selector).addEventListener('change', () => resetCustomColors(state));
   document.querySelector('#terminal-form').addEventListener('submit', event => {
     event.preventDefault();
