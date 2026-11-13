@@ -18,7 +18,7 @@
 .typing-character.is-typed { visibility: visible; }
 .typing-caret { position: relative; }
 .typing-caret::after { content: '_'; position: absolute; left: 100%; bottom: 0; color: var(--green); }
-.cpp-namespace:has(.typing-character) > .cursor { visibility: hidden; }
+.intro-note:has(.typing-character) > .cursor { visibility: hidden; }
 .intro-greeting { margin: 0 0 12px; color: var(--text); font-size: clamp(18px, 1.5vw, 23px); }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 300 18px/1.75 var(--site-font); }
