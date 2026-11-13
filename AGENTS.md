@@ -15,3 +15,5 @@ Preview: `python3 -m http.server 8000 --directory dist --bind 127.0.0.1`.
 Check JavaScript syntax with `node --check dist/app.js` when Node is available. Verify local asset paths, tab anchors, and responsive layout after changes. No automated browser testing is currently bundled.
 
 This GitHub repository is separate from the Sites deployment repository. Pushing here does not publish changes to Sites. Do not add deployment credentials to files.
+
+When Laren asks about ASCII styles, read and show the choices in `SCULPTURE_STYLES.md`, including Classic fusion. Preserve selectable older styles when introducing new ones. `CLAUDE.md` points Claude sessions to the same catalogue.

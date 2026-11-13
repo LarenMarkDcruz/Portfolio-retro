@@ -1,7 +1,7 @@
 import { initializeTerminal } from './terminal.js?v=matrix-default';
 import { renderFocusLine, selectFocusLine } from './focus_lines.js';
 import { createIntroTyping } from './intro_typing.js?v=cursor-at-end';
-import { initializeAsciiSculpture } from './ascii_sculpture.js?v=faster-motion';
+import { initializeAsciiSculpture } from './ascii_sculpture.js?v=style-library';
 import { selectIntroText } from './intro_sentences.js';
 
 document.querySelector('.intro-copy').textContent = selectIntroText([Math.random(), Math.random(), Math.random()]);
@@ -111,4 +111,4 @@ function initializeAppearancePicker() {
 initializeAppearancePicker();
 
 initializeTerminal({ navigate, themes });
-initializeAsciiSculpture({ artwork: document.querySelector('#ascii-sculpture'), button: document.querySelector('#sculpture-motion'), resetButton: document.querySelector('#sculpture-reset') });
+initializeAsciiSculpture({ artwork: document.querySelector('#ascii-sculpture'), button: document.querySelector('#sculpture-motion'), resetButton: document.querySelector('#sculpture-reset'), stylePicker: document.querySelector('#sculpture-style') });

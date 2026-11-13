@@ -1,15 +1,20 @@
 import { createSculptureScene } from './sculpture_surfaces.js?v=abstract-contours';
 import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=abstract-contours';
 
-const FRAME_COLUMNS = 104;
-const FRAME_ROWS = 64;
-const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 40;
+import { SCULPTURE_PATTERNS, SCULPTURE_STYLES, createPatternGeometry, selectSculpturePattern } from './sculpture_patterns.js?v=style-library';
+import { createSculptureFrame, drawSculptureOrbits, renderPatternSculpture } from './sculpture_point_renderer.js?v=style-library';
+
+const FRAME_COLUMNS = 160;
+const FRAME_ROWS = 96;
+/** Frame-rate ceiling; requestAnimationFrame follows the actual display refresh rate. */
+export const SCULPTURE_TARGET_FRAMES_PER_SECOND = 120;
+const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / SCULPTURE_TARGET_FRAMES_PER_SECOND;
 const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!', 'i|()[]', 'tszvcr', '2345XY', 'GKZB8M', 'W%#@']);
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 const VIEW_HALF_WIDTH = 2.5;
 const CHARACTER_WIDTH_TO_FONT_SIZE_RATIO = 0.6;
 const CHARACTER_LINE_HEIGHT = 1.08;
-const DEFAULT_VIEWPORT = Object.freeze({ rows: FRAME_ROWS, halfWidth: VIEW_HALF_WIDTH,
+const DEFAULT_VIEWPORT = Object.freeze({ columns: FRAME_COLUMNS, rows: FRAME_ROWS, halfWidth: VIEW_HALF_WIDTH,
   halfHeight: VIEW_HALF_WIDTH * FRAME_ROWS * CHARACTER_LINE_HEIGHT /
     (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) });
 const HIGHLIGHT_GLOW_IN_PIXELS = 3.375;
@@ -29,14 +34,15 @@ export function calculateSculptureMotionSpeed({ time, variation }) {
 
 /** Match a fixed camera to the rectangle without following the animated silhouette.
  * @param {{width: number, height: number}} dimensions
- * @returns {{rows: number, halfWidth: number, halfHeight: number}}
+ * @returns {{columns: number, rows: number, halfWidth: number, halfHeight: number}}
  */
 export function createSculptureViewport({ width, height }) {
-  const characterHeight = width / FRAME_COLUMNS / CHARACTER_WIDTH_TO_FONT_SIZE_RATIO * CHARACTER_LINE_HEIGHT;
+  const columns = width < 440 ? 128 : FRAME_COLUMNS;
+  const characterHeight = width / columns / CHARACTER_WIDTH_TO_FONT_SIZE_RATIO * CHARACTER_LINE_HEIGHT;
   const rows = Math.max(1, Math.ceil(height / characterHeight));
-  return { rows, halfWidth: VIEW_HALF_WIDTH,
+  return { columns, rows, halfWidth: VIEW_HALF_WIDTH,
     halfHeight: VIEW_HALF_WIDTH * rows * CHARACTER_LINE_HEIGHT /
-      (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) };
+      (columns * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) };
 }
 
 /** Shade one occupied character using the geometry beneath its viewing ray.
@@ -59,28 +65,34 @@ function writeSurfaceCharacter({ surface, scene, position }, frame) {
  * @returns {{characters: string[], tones: Uint8Array}}
  */
 function renderSculptureFrame(options) {
-  const scene = createSculptureScene(options);
   const viewport = options.viewport ?? DEFAULT_VIEWPORT;
-  const frame = { characters: Array(FRAME_COLUMNS * viewport.rows).fill(' '),
-    tones: new Uint8Array(FRAME_COLUMNS * viewport.rows) };
+  const geometry = options.geometry ?? createPatternGeometry(options.variation);
+  if (geometry.pattern.firstSurface !== 'fusion') return renderPatternSculpture({ geometry, time: options.time, viewport });
+  const scene = createSculptureScene(options);
+  const frame = createSculptureFrame(viewport);
   for (let row = 0; row < viewport.rows; row++) {
-    for (let column = 0; column < FRAME_COLUMNS; column++) {
-      const origin = [((column + 0.5) / FRAME_COLUMNS * 2 - 1) * viewport.halfWidth,
+    for (let column = 0; column < viewport.columns; column++) {
+      const origin = [((column + 0.5) / viewport.columns * 2 - 1) * viewport.halfWidth,
         (1 - (row + 0.5) / viewport.rows * 2) * viewport.halfHeight, 4];
       const surface = traceSculptureRay(origin, scene);
-      if (surface) writeSurfaceCharacter({ surface, scene, position: row * FRAME_COLUMNS + column }, frame);
+      if (!surface) continue;
+      const position = row * viewport.columns + column;
+      writeSurfaceCharacter({ surface, scene, position }, frame);
+      frame.depths[position] = surface.point[2];
     }
   }
+  drawSculptureOrbits({ geometry, time: options.time }, frame, viewport);
   return frame;
 }
 
 /** Keep every frame on the same character grid, including empty edge cells.
  * @param {string[]} characters
+ * @param {number} columns
  * @returns {string}
  */
-function formatCharacterRows(characters) {
-  return Array.from({ length: characters.length / FRAME_COLUMNS }, (_, row) =>
-    characters.slice(row * FRAME_COLUMNS, (row + 1) * FRAME_COLUMNS).join('')).join('\n');
+function formatCharacterRows(characters, columns) {
+  return Array.from({ length: characters.length / columns }, (_, row) =>
+    characters.slice(row * columns, (row + 1) * columns).join('')).join('\n');
 }
 
 /** Render a deterministic plain-text snapshot for a given time and random seed.
@@ -88,7 +100,8 @@ function formatCharacterRows(characters) {
  * @returns {string}
  */
 export function renderAsciiSculpture(options) {
-  return formatCharacterRows(renderSculptureFrame(options).characters);
+  const frame = renderSculptureFrame(options);
+  return formatCharacterRows(frame.characters, frame.columns);
 }
 
 /** Update seven reusable text layers with actual highlight and shadow colors.
@@ -107,8 +120,9 @@ function drawSculpture({ artwork, state }) {
   }
   Array.from(artwork.children).forEach((layer, tone) => {
     layer.textContent = formatCharacterRows(frame.characters.map((character, index) =>
-      frame.tones[index] === tone ? character : ' '));
+      frame.tones[index] === tone ? character : ' '), frame.columns);
   });
+  artwork.dataset.pattern = state.geometry.pattern.name;
   artwork.style.setProperty('--sculpture-glow', `${HIGHLIGHT_GLOW_IN_PIXELS}px`);
 }
 
@@ -152,19 +166,21 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
 }
 
 /** Keep animation work scoped to a visible, unpaused sculpture.
- * @param {{artwork: HTMLElement, button: HTMLButtonElement, resetButton: HTMLButtonElement}} elements
+ * @param {{artwork: HTMLElement, button: HTMLButtonElement, resetButton: HTMLButtonElement, stylePicker: HTMLSelectElement}} elements
  * @returns {void}
  */
-export function initializeAsciiSculpture({ artwork, button, resetButton }) {
+export function initializeAsciiSculpture({ artwork, button, resetButton, stylePicker }) {
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const state = { viewport: DEFAULT_VIEWPORT, isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
-    variation: Math.random() * FULL_ROTATION_IN_RADIANS };
+  const variation = Math.random() * FULL_ROTATION_IN_RADIANS;
+  const state = { style: 'random', geometry: createPatternGeometry(variation), viewport: DEFAULT_VIEWPORT, isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
+    variation };
   const drawFrame = createFrameRenderer({ artwork, state });
   const synchronizePlayback = createPlaybackSynchronizer({ button, state, motionPreference, drawFrame });
   observeSculptureViewport({ artwork, state });
   drawSculpture({ artwork, state });
   observeSculpturePlayback({ artwork, button, state, synchronizePlayback, motionPreference });
   connectSculptureControls({ artwork, state, resetButton });
+  connectSculptureStylePicker({ artwork, state, stylePicker });
 }
 
 /** Connect visibility, motion preferences, and the optional pause control.
@@ -186,14 +202,40 @@ function observeSculpturePlayback({ artwork, button, state, synchronizePlayback,
   synchronizePlayback();
 }
 
+/** Randomize the pose while preserving an explicitly chosen family.
+ * @param {object} state
+ * @returns {void}
+ */
+function randomizeSculptureState(state) {
+  state.time = Math.random() * 48;
+  let variation = Math.random() * FULL_ROTATION_IN_RADIANS;
+  if (state.style === 'random' && selectSculpturePattern(variation) === state.geometry.pattern) {
+    variation = (variation + FULL_ROTATION_IN_RADIANS / SCULPTURE_PATTERNS.length) % FULL_ROTATION_IN_RADIANS;
+  }
+  state.variation = variation;
+  state.geometry = createPatternGeometry(variation, state.style);
+}
+
 /** Randomize both bodies without changing the playback state.
  * @param {object} controls
  * @returns {void}
  */
 function connectSculptureControls({ artwork, state, resetButton }) {
   resetButton.addEventListener('click', () => {
-    state.time = Math.random() * 48;
-    state.variation = Math.random() * FULL_ROTATION_IN_RADIANS;
+    randomizeSculptureState(state);
+    drawSculpture({ artwork, state });
+  });
+}
+
+/** Make every current family and the original algorithm directly selectable.
+ * @param {{artwork: HTMLElement, state: object, stylePicker: HTMLSelectElement}} options
+ * @returns {void}
+ */
+function connectSculptureStylePicker({ artwork, state, stylePicker }) {
+  SCULPTURE_STYLES.forEach(style => stylePicker.add(new Option(style.label, style.value)));
+  stylePicker.addEventListener('change', () => {
+    state.style = stylePicker.value;
+    randomizeSculptureState(state);
     drawSculpture({ artwork, state });
   });
 }
@@ -207,6 +249,7 @@ function observeSculptureViewport({ artwork, state }) {
     const { width, height } = entries[0].contentRect;
     if (width <= 0 || height <= 0) return;
     state.viewport = createSculptureViewport({ width, height });
+    artwork.style.setProperty('--sculpture-columns', state.viewport.columns);
     drawSculpture({ artwork, state });
   });
   observer.observe(artwork);

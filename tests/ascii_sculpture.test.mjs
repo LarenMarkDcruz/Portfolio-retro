@@ -21,8 +21,8 @@ test('should preserve repeatable frame dimensions for a given time and seed', ()
   const frame = renderAsciiSculpture(options);
   assert.equal(frame, renderAsciiSculpture(options));
   assert.notEqual(frame, renderAsciiSculpture({ ...options, variation: 3 }));
-  assert.equal(frame.split('\n').length, 64);
-  assert.ok(frame.split('\n').every(row => row.length === 104));
+  assert.equal(frame.split('\n').length, 96);
+  assert.ok(frame.split('\n').every(row => row.length === 160));
 });
 
 test('should retain the camera and character grid while shapes grow and merge', () => {
@@ -31,11 +31,11 @@ test('should retain the camera and character grid while shapes grow and merge', 
     renderAsciiSculpture({ time, variation: 2, viewport }).split('\n'));
   for (const rows of frames) {
     assert.equal(rows.length, viewport.rows);
-    assert.ok(rows.every(row => row.length === 104));
+    assert.ok(rows.every(row => row.length === 160));
     assert.ok(rows.some(row => row.trim().length > 0));
   }
   const tallerViewport = createSculptureViewport({ width: 575, height: 320 });
   assert.equal(viewport.halfWidth, tallerViewport.halfWidth);
-  assert.equal(viewport.halfHeight / viewport.rows, tallerViewport.halfHeight / tallerViewport.rows);
+  assert.ok(Math.abs(viewport.halfHeight / viewport.rows - tallerViewport.halfHeight / tallerViewport.rows) < 1e-12);
   assert.ok(tallerViewport.rows > viewport.rows);
 });
