@@ -51,7 +51,7 @@ function showTab(id, { focus = false, scroll = false } = {}) {
   document.querySelector('#current-path').textContent = panels[activeIndex].id;
   const filename = tabs[activeIndex].textContent.trim().replace(/^\[|\]$/g, '');
   document.querySelector('#terminal-location').textContent = `~/${filename}`;
-  document.title = `Laren Mark D’Cruz | ${tabs[activeIndex].textContent.trim().replace(/^\[|\]$/g, '')}`;
+  document.title = 'Meet Laren';
   if (focus) tabs[activeIndex].focus();
   if (scroll) window.scrollTo({ top: 0, behavior: 'instant' });
   playIntroTyping();
