@@ -30,9 +30,9 @@ export function createSculptureScene({ time, variation }) {
     const yaw = time * 0.14 + pattern.tilt + index;
     const scale = 0.5 + 0.75 * (index === 0 ? growth : 1 - growth);
     return { center: [direction * separation * Math.cos(orbit), direction * separation * Math.sin(orbit),
-      direction * 0.22 * Math.sin(time * 0.21 + phase)], scale, boundRadius: scale * 1.3 + 0.2,
+      direction * 0.22 * Math.sin(time * 0.21 + phase)], scale, boundRadius: scale * 1.5 + 0.2,
       pitchCosine: Math.cos(pitch), pitchSine: Math.sin(pitch), yawCosine: Math.cos(yaw), yawSine: Math.sin(yaw),
-      phase, ripple: pattern.ripple, morph: 0.2 + 0.2 * Math.sin(time * 0.17 + phase) };
+      phase, ripple: pattern.ripple, morph: 0.15 + 0.55 * (0.5 + 0.5 * Math.sin(time * 0.17 + phase)) };
   });
   return { bodies, blendRadius: 0.36 + 0.12 * Math.sin(time * 0.15 + pattern.phase) };
 }
@@ -52,8 +52,10 @@ function sampleBodyDistance(point, body) {
   const localDepth = turnedDepth * body.pitchCosine - vertical * body.pitchSine;
   const warpedHorizontal = turnedHorizontal + 0.1 * Math.sin(localVertical * 3 + body.phase);
   const warpedDepth = localDepth + 0.08 * Math.sin(turnedHorizontal * 3 - body.phase);
-  const ringRadius = Math.sqrt(warpedHorizontal ** 2 + localVertical ** 2) - 0.64;
-  const tubeRadius = 0.28 + 0.055 * Math.sin(localVertical * 3 + body.phase);
+  const angle = Math.atan2(localVertical, warpedHorizontal);
+  const contour = 0.64 + 0.1 * Math.sin(angle * 3 + body.phase) + 0.045 * Math.cos(angle * 2 - body.phase);
+  const ringRadius = Math.hypot(warpedHorizontal, localVertical) - contour;
+  const tubeRadius = 0.28 + 0.065 * Math.sin(angle * 2 + localVertical * 3 + body.phase);
   const loop = Math.sqrt(ringRadius ** 2 + warpedDepth ** 2) - tubeRadius;
   const lobe = Math.sqrt(turnedHorizontal ** 2 + (localVertical * 0.86) ** 2 + (localDepth * 1.08) ** 2) - 0.86;
   const ripple = body.ripple * Math.sin(turnedHorizontal * 3 + body.phase) *

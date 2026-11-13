@@ -1,17 +1,20 @@
-import { createSculptureScene } from './sculpture_surfaces.js?v=fusion';
-import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=fusion';
+import { createSculptureScene } from './sculpture_surfaces.js?v=abstract-contours';
+import { traceSculptureRay, calculateSurfaceLight } from './sculpture_raymarcher.js?v=abstract-contours';
 
 const FRAME_COLUMNS = 104;
 const FRAME_ROWS = 64;
 const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 40;
 const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!', 'i|()[]', 'tszvcr', '2345XY', 'GKZB8M', 'W%#@']);
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
-const FRAME_HEIGHT_TO_WIDTH_RATIO = 1.11;
+const VIEW_HALF_WIDTH = 2.5;
+const CHARACTER_WIDTH_TO_FONT_SIZE_RATIO = 0.6;
+const CHARACTER_LINE_HEIGHT = 1.08;
+const DEFAULT_VIEWPORT = Object.freeze({ rows: FRAME_ROWS, halfWidth: VIEW_HALF_WIDTH,
+  halfHeight: VIEW_HALF_WIDTH * FRAME_ROWS * CHARACTER_LINE_HEIGHT /
+    (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) });
 const HIGHLIGHT_GLOW_IN_PIXELS = 3.375;
 const MINIMUM_MOTION_SPEED_MULTIPLIER = 1.5;
 const MAXIMUM_MOTION_SPEED_MULTIPLIER = 2;
-const FULL_FRAME_WINDOW = Object.freeze({ firstRow: 0, lastRow: FRAME_ROWS - 1,
-  firstColumn: 0, lastColumn: FRAME_COLUMNS - 1 });
 
 /** Ease between faster motion speeds using a seed-specific rhythm.
  * @param {{time: number, variation: number}} options
@@ -24,22 +27,16 @@ export function calculateSculptureMotionSpeed({ time, variation }) {
     (MAXIMUM_MOTION_SPEED_MULTIPLIER - MINIMUM_MOTION_SPEED_MULTIPLIER);
 }
 
-/** Keep both bodies prominent while allowing room for separation and growth.
- * @param {object} scene
- * @returns {{horizontal: number, vertical: number, halfWidth: number, halfHeight: number}}
+/** Match a fixed camera to the rectangle without following the animated silhouette.
+ * @param {{width: number, height: number}} dimensions
+ * @returns {{rows: number, halfWidth: number, halfHeight: number}}
  */
-function frameSculptureScene(scene) {
-  const horizontalEdges = scene.bodies.flatMap(body =>
-    [body.center[0] - body.boundRadius, body.center[0] + body.boundRadius]);
-  const verticalEdges = scene.bodies.flatMap(body =>
-    [body.center[1] - body.boundRadius, body.center[1] + body.boundRadius]);
-  const left = Math.min(...horizontalEdges);
-  const right = Math.max(...horizontalEdges);
-  const bottom = Math.min(...verticalEdges);
-  const top = Math.max(...verticalEdges);
-  const halfWidth = Math.max((right - left) / 2, (top - bottom) / 2 / FRAME_HEIGHT_TO_WIDTH_RATIO) * 1.06;
-  return { horizontal: (left + right) / 2, vertical: (bottom + top) / 2,
-    halfWidth, halfHeight: halfWidth * FRAME_HEIGHT_TO_WIDTH_RATIO };
+export function createSculptureViewport({ width, height }) {
+  const characterHeight = width / FRAME_COLUMNS / CHARACTER_WIDTH_TO_FONT_SIZE_RATIO * CHARACTER_LINE_HEIGHT;
+  const rows = Math.max(1, Math.ceil(height / characterHeight));
+  return { rows, halfWidth: VIEW_HALF_WIDTH,
+    halfHeight: VIEW_HALF_WIDTH * rows * CHARACTER_LINE_HEIGHT /
+      (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) };
 }
 
 /** Shade one occupied character using the geometry beneath its viewing ray.
@@ -58,18 +55,18 @@ function writeSurfaceCharacter({ surface, scene, position }, frame) {
 }
 
 /** Ray march two bodies through a shared field so fusion changes the silhouette.
- * @param {{time: number, variation: number}} options
+ * @param {{time: number, variation: number, viewport?: object}} options
  * @returns {{characters: string[], tones: Uint8Array}}
  */
 function renderSculptureFrame(options) {
   const scene = createSculptureScene(options);
-  const frame = { characters: Array(FRAME_COLUMNS * FRAME_ROWS).fill(' '),
-    tones: new Uint8Array(FRAME_COLUMNS * FRAME_ROWS) };
-  const view = frameSculptureScene(scene);
-  for (let row = 0; row < FRAME_ROWS; row++) {
+  const viewport = options.viewport ?? DEFAULT_VIEWPORT;
+  const frame = { characters: Array(FRAME_COLUMNS * viewport.rows).fill(' '),
+    tones: new Uint8Array(FRAME_COLUMNS * viewport.rows) };
+  for (let row = 0; row < viewport.rows; row++) {
     for (let column = 0; column < FRAME_COLUMNS; column++) {
-      const origin = [view.horizontal + ((column + 0.5) / FRAME_COLUMNS * 2 - 1) * view.halfWidth,
-        view.vertical + (1 - (row + 0.5) / FRAME_ROWS * 2) * view.halfHeight, 4];
+      const origin = [((column + 0.5) / FRAME_COLUMNS * 2 - 1) * viewport.halfWidth,
+        (1 - (row + 0.5) / viewport.rows * 2) * viewport.halfHeight, 4];
       const surface = traceSculptureRay(origin, scene);
       if (surface) writeSurfaceCharacter({ surface, scene, position: row * FRAME_COLUMNS + column }, frame);
     }
@@ -77,44 +74,17 @@ function renderSculptureFrame(options) {
   return frame;
 }
 
-/** Find the occupied rectangle so invisible canvas padding cannot shrink the art.
+/** Keep every frame on the same character grid, including empty edge cells.
  * @param {string[]} characters
- * @returns {{firstRow: number, lastRow: number, firstColumn: number, lastColumn: number}}
- */
-function findSculptureWindow(characters) {
-  let firstRow = FRAME_ROWS;
-  let lastRow = 0;
-  let firstColumn = FRAME_COLUMNS;
-  let lastColumn = 0;
-  characters.forEach((character, position) => {
-    if (character === ' ') return;
-    const row = Math.floor(position / FRAME_COLUMNS);
-    const column = position % FRAME_COLUMNS;
-    firstRow = Math.min(firstRow, row);
-    lastRow = Math.max(lastRow, row);
-    firstColumn = Math.min(firstColumn, column);
-    lastColumn = Math.max(lastColumn, column);
-  });
-  if (firstRow === FRAME_ROWS) return FULL_FRAME_WINDOW;
-  return { firstRow: Math.max(0, firstRow - 2), lastRow: Math.min(FRAME_ROWS - 1, lastRow + 2),
-    firstColumn: Math.max(0, firstColumn - 2), lastColumn: Math.min(FRAME_COLUMNS - 1, lastColumn + 2) };
-}
-
-/** Format a character window while preserving alignment across every shade layer.
- * @param {string[]} characters
- * @param {object} window
  * @returns {string}
  */
-function formatCharacterRows(characters, window = FULL_FRAME_WINDOW) {
-  return Array.from({ length: window.lastRow - window.firstRow + 1 }, (_, index) => {
-    const row = window.firstRow + index;
-    return characters.slice(row * FRAME_COLUMNS + window.firstColumn,
-      row * FRAME_COLUMNS + window.lastColumn + 1).join('');
-  }).join('\n');
+function formatCharacterRows(characters) {
+  return Array.from({ length: characters.length / FRAME_COLUMNS }, (_, row) =>
+    characters.slice(row * FRAME_COLUMNS, (row + 1) * FRAME_COLUMNS).join('')).join('\n');
 }
 
 /** Render a deterministic plain-text snapshot for a given time and random seed.
- * @param {{time: number, variation: number}} options
+ * @param {{time: number, variation: number, viewport?: object}} options
  * @returns {string}
  */
 export function renderAsciiSculpture(options) {
@@ -127,9 +97,6 @@ export function renderAsciiSculpture(options) {
  */
 function drawSculpture({ artwork, state }) {
   const frame = renderSculptureFrame(state);
-  const window = findSculptureWindow(frame.characters);
-  artwork.style.setProperty('--sculpture-columns', window.lastColumn - window.firstColumn + 1);
-  artwork.style.setProperty('--sculpture-rows', window.lastRow - window.firstRow + 1);
   if (!artwork.firstElementChild) {
     artwork.textContent = '';
     for (let tone = 0; tone < SHADE_GROUPS.length; tone++) {
@@ -140,7 +107,7 @@ function drawSculpture({ artwork, state }) {
   }
   Array.from(artwork.children).forEach((layer, tone) => {
     layer.textContent = formatCharacterRows(frame.characters.map((character, index) =>
-      frame.tones[index] === tone ? character : ' '), window);
+      frame.tones[index] === tone ? character : ' '));
   });
   artwork.style.setProperty('--sculpture-glow', `${HIGHLIGHT_GLOW_IN_PIXELS}px`);
 }
@@ -190,10 +157,11 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
  */
 export function initializeAsciiSculpture({ artwork, button, resetButton }) {
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
+  const state = { viewport: DEFAULT_VIEWPORT, isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, lastMotionUpdate: 0, time: Math.random() * 48,
     variation: Math.random() * FULL_ROTATION_IN_RADIANS };
   const drawFrame = createFrameRenderer({ artwork, state });
   const synchronizePlayback = createPlaybackSynchronizer({ button, state, motionPreference, drawFrame });
+  observeSculptureViewport({ artwork, state });
   drawSculpture({ artwork, state });
   observeSculpturePlayback({ artwork, button, state, synchronizePlayback, motionPreference });
   connectSculptureControls({ artwork, state, resetButton });
@@ -228,4 +196,18 @@ function connectSculptureControls({ artwork, state, resetButton }) {
     state.variation = Math.random() * FULL_ROTATION_IN_RADIANS;
     drawSculpture({ artwork, state });
   });
+}
+
+/** Change the grid only when the rectangle changes size, never as the bodies move.
+ * @param {{artwork: HTMLElement, state: object}} options
+ * @returns {void}
+ */
+function observeSculptureViewport({ artwork, state }) {
+  const observer = new ResizeObserver(entries => {
+    const { width, height } = entries[0].contentRect;
+    if (width <= 0 || height <= 0) return;
+    state.viewport = createSculptureViewport({ width, height });
+    drawSculpture({ artwork, state });
+  });
+  observer.observe(artwork);
 }

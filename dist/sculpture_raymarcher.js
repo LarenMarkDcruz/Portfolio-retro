@@ -1,4 +1,4 @@
-import { sampleSculptureDistance, sampleSculptureSurface } from './sculpture_surfaces.js?v=fusion';
+import { sampleSculptureDistance, sampleSculptureSurface } from './sculpture_surfaces.js?v=abstract-contours';
 
 const MAXIMUM_RAY_STEPS = 80;
 const SURFACE_HIT_DISTANCE = 0.009;

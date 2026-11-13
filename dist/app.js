@@ -1,7 +1,7 @@
 import { initializeTerminal } from './terminal.js?v=matrix-default';
 import { renderFocusLine, selectFocusLine } from './focus_lines.js';
 import { createIntroTyping } from './intro_typing.js?v=cursor-at-end';
-import { initializeAsciiSculpture } from './ascii_sculpture.js?v=variable-speed';
+import { initializeAsciiSculpture } from './ascii_sculpture.js?v=stable-framing';
 import { selectIntroText } from './intro_sentences.js';
 
 document.querySelector('.intro-copy').textContent = selectIntroText([Math.random(), Math.random(), Math.random()]);
