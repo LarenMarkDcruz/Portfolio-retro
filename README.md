@@ -75,3 +75,7 @@ Open **[command line]** and enter `help`. This is a browser terminal for the por
 Use the height slider, `size` command, or native bottom-edge drag handle to resize the terminal. It stays in document flow. Custom background and foreground colors use six-digit hexadecimal values and require a minimum body-text contrast ratio of 4.5:1. Choosing a palette or display mode resets custom colors. Color settings persist locally; command history stays in the current session.
 
 A brief section entrance and hover glows respect reduced-motion preferences. No photo is required for this text-first portfolio.
+
+## Random C++ motto
+
+`dist/focus_lines.js` contains 25 short C++ declarations. Every page load selects one at random and renders syntax-colored text. The motto stays still while reading. It works on the local server and static hosting without an API or backend. A refresh may select the same motto again.

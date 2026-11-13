@@ -1,4 +1,7 @@
 import { initializeTerminal } from './terminal.js';
+import { renderFocusLine, selectFocusLine } from './focus_lines.js';
+
+renderFocusLine({ element: document.querySelector('.cpp-meta'), declaration: selectFocusLine(Math.random()) });
 
 const themePicker = document.querySelector('#theme');
 const themes = ['matrix', 'amber', 'cyan', 'violet', 'rose'];
