@@ -1,6 +1,6 @@
 import { initializeTerminal } from './terminal.js';
 import { renderFocusLine, selectFocusLine } from './focus_lines.js';
-import { createIntroTyping } from './intro_typing.js';
+import { createIntroTyping } from './intro_typing.js?v=cursor-at-end';
 
 const playIntroTyping = createIntroTyping(document.querySelector('#home'));
 

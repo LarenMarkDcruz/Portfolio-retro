@@ -81,10 +81,8 @@ function animateTypingLines({ lines, motionPreference }) {
     if (hasFinished) return;
     startedAt ??= timestamp;
     const visibleCount = Math.floor((timestamp - startedAt) / CHARACTER_INTERVAL_IN_MILLISECONDS) + 1;
-    characters[revealedCount - 1]?.classList.remove('typing-caret');
     characters.slice(revealedCount, visibleCount).forEach(character => character.classList.add('is-typed'));
     revealedCount = Math.min(visibleCount, characters.length);
-    characters[revealedCount - 1]?.classList.add('typing-caret');
     if (visibleCount >= characters.length) return finishTyping();
     requestAnimationFrame(revealFrame);
   };
