@@ -380,7 +380,7 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 .beyond-interests { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: center; }
 .beyond-interests .interests-list { margin: 0; }
 .ascii-sculpture { min-width: 0; margin: 0; container-type: inline-size; }
-.ascii-sculpture pre { margin: 0; overflow: hidden; color: var(--green); font: 500 clamp(5px, 2.2cqw, 12px)/1.15 'Source Code Pro', monospace; white-space: pre; text-shadow: 0 0 4px var(--glow); }
+.ascii-sculpture pre { margin: 0; overflow: hidden; color: var(--green); font: 500 clamp(4px, 1.55cqw, 10px)/1.08 'Source Code Pro', monospace; white-space: pre; text-shadow: none; }
 .ascii-sculpture figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 13px; }
 .ascii-sculpture button { min-height: 44px; }
 @media (max-width: 900px) {

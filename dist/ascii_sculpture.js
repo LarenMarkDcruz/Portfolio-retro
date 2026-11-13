@@ -1,7 +1,9 @@
-const FRAME_COLUMNS = 72;
-const FRAME_ROWS = 38;
+import { sampleSculptureSurface } from './sculpture_surfaces.js';
+
+const FRAME_COLUMNS = 104;
+const FRAME_ROWS = 64;
 const FRAME_INTERVAL_IN_MILLISECONDS = 1000 / 24;
-const SHADE_CHARACTERS = '.,:;irsXA253hMHGS#9B&@';
+const SHADE_GROUPS = Object.freeze(['.,`-', '/~:;!', 'i|()[]', 'tszvcr', '2345XY', 'GKZB8M', 'W%#@']);
 const FULL_ROTATION_IN_RADIANS = Math.PI * 2;
 
 /** Rotate a point around two independently drifting axes.
@@ -16,22 +18,6 @@ function rotatePoint([horizontal, vertical, depth], [pitch, yaw]) {
     tiltedVertical, tiltedDepth * Math.cos(yaw) - horizontal * Math.sin(yaw)];
 }
 
-/** Sample a continuous tube that folds between a ring and an infinity loop.
- * @param {{longitude: number, latitude: number, time: number}} sample
- * @returns {{point: number[], normal: number[]}}
- */
-function sampleSurface({ longitude, latitude, time }) {
-  const fold = (1 - Math.cos(time * 0.31)) / 2;
-  const ripple = Math.sin(longitude * 3 + time * 0.43) * 0.09;
-  const radius = 0.43 + ripple;
-  const normal = [Math.cos(longitude) * Math.cos(latitude),
-    Math.sin(longitude) * Math.cos(latitude), Math.sin(latitude)];
-  const center = [1.2 * Math.cos(longitude),
-    1.2 * Math.sin(longitude) * (1 - fold + fold * Math.cos(longitude)),
-    fold * 0.55 * Math.sin(longitude)];
-  return { point: center.map((coordinate, index) => coordinate + radius * normal[index]), normal };
-}
-
 /** Write a lit surface sample into a character buffer using depth testing.
  * @param {{point: number[], normal: number[]}} surface
  * @param {{characters: string[], depths: Float32Array, angles: number[]}} frame
@@ -40,16 +26,17 @@ function sampleSurface({ longitude, latitude, time }) {
 function projectSurface(surface, frame) {
   const [horizontal, vertical, depth] = rotatePoint(surface.point, frame.angles);
   const projectionScale = 5 / (5 - depth);
-  const column = Math.round(FRAME_COLUMNS / 2 + horizontal * projectionScale * 17);
-  const row = Math.round(FRAME_ROWS / 2 - vertical * projectionScale * 9);
+  const column = Math.round(FRAME_COLUMNS / 2 + horizontal * projectionScale * 25);
+  const row = Math.round(FRAME_ROWS / 2 - vertical * projectionScale * 17);
   if (column < 0 || column >= FRAME_COLUMNS || row < 0 || row >= FRAME_ROWS) return;
   const position = row * FRAME_COLUMNS + column;
   if (depth <= frame.depths[position]) return;
   const [normalHorizontal, normalVertical, normalDepth] = rotatePoint(surface.normal, frame.angles);
-  const light = Math.max(0, normalHorizontal * -0.35 + normalVertical * 0.45 + normalDepth * 0.7);
-  const shade = Math.min(SHADE_CHARACTERS.length - 1, Math.floor((0.15 + light * 0.85) * (SHADE_CHARACTERS.length - 1)));
+  const light = Math.max(0, normalHorizontal * -0.4 + normalVertical * 0.55 + normalDepth * 0.7);
+  const group = SHADE_GROUPS[Math.min(SHADE_GROUPS.length - 1, Math.floor(light * SHADE_GROUPS.length))];
+  const texture = Math.abs(Math.sin(surface.point[0] * 127 + surface.point[1] * 311 + surface.point[2] * 73));
   frame.depths[position] = depth;
-  frame.characters[position] = SHADE_CHARACTERS[shade];
+  frame.characters[position] = group[Math.min(group.length - 1, Math.floor(texture * group.length))];
 }
 
 /** Render one deterministic ASCII frame; time is measured in seconds.
@@ -59,10 +46,10 @@ function projectSurface(surface, frame) {
 export function renderAsciiSculpture({ time, variation }) {
   const frame = { characters: Array(FRAME_COLUMNS * FRAME_ROWS).fill(' '),
     depths: new Float32Array(FRAME_COLUMNS * FRAME_ROWS).fill(-Infinity),
-    angles: [time * 0.29 + variation, time * 0.41 + Math.sin(time * 0.17) * 0.4] };
-  for (let longitude = 0; longitude < FULL_ROTATION_IN_RADIANS; longitude += 0.035) {
-    for (let latitude = 0; latitude < FULL_ROTATION_IN_RADIANS; latitude += 0.09) {
-      projectSurface(sampleSurface({ longitude, latitude, time }), frame);
+    angles: [Math.sin(time * 0.13 + variation) * 0.35, time * 0.22 + variation] };
+  for (let longitude = 0; longitude < FULL_ROTATION_IN_RADIANS; longitude += 0.025) {
+    for (let latitude = 0; latitude < FULL_ROTATION_IN_RADIANS; latitude += 0.05) {
+      projectSurface(sampleSculptureSurface({ longitude, latitude, time }), frame);
     }
   }
   return Array.from({ length: FRAME_ROWS }, (_, row) =>
@@ -112,7 +99,7 @@ function createPlaybackSynchronizer({ button, state, motionPreference, drawFrame
 export function initializeAsciiSculpture({ artwork, button }) {
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   const variation = Math.random() * FULL_ROTATION_IN_RADIANS;
-  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, time: variation * 3 };
+  const state = { isVisible: false, isPaused: false, frameRequest: 0, lastFrame: 0, time: Math.random() * 48 };
   const drawFrame = createFrameRenderer({ artwork, state, variation });
   const synchronizePlayback = createPlaybackSynchronizer({ button, state, motionPreference, drawFrame });
   artwork.textContent = renderAsciiSculpture({ time: state.time, variation });
