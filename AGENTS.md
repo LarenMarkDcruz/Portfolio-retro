@@ -7,7 +7,7 @@ Preserve these choices unless the user asks to change them:
 - Email is the only contact method.
 - Near-black terminal background, Source Code Pro typography, C++-inspired syntax accents.
 - Matrix green returns on every page load; other palettes and custom colors apply during the current visit.
-- Name and role use medium weight 500, with a glow. Other text uses light weight 300.
+- Name and role use light weight 300, with a glow. Other text uses light weight 300.
 - Mobile layout, accessible keyboard tabs, and 44px touch targets.
 - Avoid inventing projects or professional claims; use supplied résumé information.
 

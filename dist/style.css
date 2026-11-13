@@ -287,10 +287,12 @@ body:is([data-appearance=dark], [data-appearance=navy])[data-theme=violet] { --g
 body:is([data-appearance=dark], [data-appearance=navy])[data-theme=rose] { --green: #ff8cbd; --phosphor: #ffc1dd; --bright: #ffe4ef; --dim: #d6a0b8; --glow: #ff8cbd70; }
 h1 { font-size: clamp(52px, 5.4vw, 100px); line-height: 1.12; }
 .brand, #home h1 { font-family: var(--site-font); font-weight: 500; letter-spacing: -.028em; }
-#home h1 { color: #fff; text-shadow: 0 0 2px #ffffffd9, 0 0 8px #ffffff99, 0 0 24px #ffffff66, 0 0 48px #ffffff33; }
+#home h1 { color: #fff; font-weight: 300; text-shadow: 0 0 2px #ffffffd9, 0 0 10px #ffffffb3, 0 0 28px #ffffff80, 0 0 54px #ffffff40; }
+#home .lead { font-weight: 300; text-shadow: 0 0 3px var(--glow), 0 0 10px var(--glow), 0 0 24px var(--glow); }
 #home h1 .accent { color: inherit; }
+body[data-appearance=light] #home .lead { text-shadow: none; }
 body[data-appearance=light] #home h1 { color: var(--text); text-shadow: none; }
-@media (prefers-contrast: more) { #home h1 { text-shadow: none; } }
+@media (prefers-contrast: more) { #home h1, #home .lead { text-shadow: none; } }
 .intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .intro-identity { align-self: center; }
 .terminal-content { height: 28svh; min-height: 180px; overflow: hidden; resize: none; display: flex; flex-direction: column; padding: 12px 16px; border: 1px solid var(--line); background: var(--bg); scrollbar-color: var(--dim) var(--bg); }
