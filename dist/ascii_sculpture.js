@@ -13,8 +13,8 @@ const DEFAULT_VIEWPORT = Object.freeze({ rows: FRAME_ROWS, halfWidth: VIEW_HALF_
   halfHeight: VIEW_HALF_WIDTH * FRAME_ROWS * CHARACTER_LINE_HEIGHT /
     (FRAME_COLUMNS * CHARACTER_WIDTH_TO_FONT_SIZE_RATIO) });
 const HIGHLIGHT_GLOW_IN_PIXELS = 3.375;
-const MINIMUM_MOTION_SPEED_MULTIPLIER = 1.5;
-const MAXIMUM_MOTION_SPEED_MULTIPLIER = 2;
+const MINIMUM_MOTION_SPEED_MULTIPLIER = 2.25;
+const MAXIMUM_MOTION_SPEED_MULTIPLIER = 3;
 
 /** Ease between faster motion speeds using a seed-specific rhythm.
  * @param {{time: number, variation: number}} options

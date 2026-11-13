@@ -2,16 +2,16 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { calculateSculptureMotionSpeed, createSculptureViewport, renderAsciiSculpture } from '../dist/ascii_sculpture.js';
 
-test('should ease smoothly between one-and-a-half and double motion speed', () => {
+test('should ease smoothly between 2.25 and triple motion speed', () => {
   const speeds = [];
   for (let time = 0; time < 100; time += 0.1) {
     const speed = calculateSculptureMotionSpeed({ time, variation: 2 });
-    assert.ok(speed >= 1.5 && speed <= 2);
-    if (speeds.length) assert.ok(Math.abs(speed - speeds.at(-1)) < 0.005);
+    assert.ok(speed >= 2.25 && speed <= 3);
+    if (speeds.length) assert.ok(Math.abs(speed - speeds.at(-1)) < 0.0075);
     speeds.push(speed);
   }
-  assert.ok(Math.min(...speeds) < 1.51);
-  assert.ok(Math.max(...speeds) > 1.99);
+  assert.ok(Math.min(...speeds) < 2.265);
+  assert.ok(Math.max(...speeds) > 2.985);
   assert.notEqual(calculateSculptureMotionSpeed({ time: 5, variation: 2 }),
     calculateSculptureMotionSpeed({ time: 5, variation: 3 }));
 });
