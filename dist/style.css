@@ -309,3 +309,32 @@ body[data-appearance=navy] { --bg: #0f0f23; }
 #terminal-output { flex: 1; min-height: 0; overflow-y: auto; overflow-wrap: anywhere; }
 .terminal form { flex: none; flex-wrap: nowrap; }
 .terminal form label { flex-basis: auto; white-space: nowrap; }
+
+/* A footer-like prompt stays in the document flow without a surrounding box. */
+.shell > .terminal { margin: 20px 0 0; padding: 12px 0 0; border: 0; }
+.terminal-content { height: auto; min-height: 0; max-height: none; padding: 0; border: 0; background: transparent; gap: 4px; cursor: text; }
+.terminal-content > p { margin: 0; font-size: 14px; }
+#terminal-output { flex: none; max-height: clamp(100px, 18svh, 200px); position: relative; }
+#terminal-output:empty { display: none; }
+#terminal-output p { border: 0; padding-left: 0; margin: 8px 0 14px; }
+.terminal form { gap: 10px; }
+.terminal form label { color: var(--muted); }
+#terminal-location { color: var(--green); }
+.terminal-entry { position: relative; flex: 1; min-width: 44px; }
+.terminal-entry input { display: block; width: 100%; padding: 0; border-radius: 0; caret-color: var(--green); }
+.terminal-entry input:focus-visible { outline: none; }
+.terminal-entry:focus-within { box-shadow: 0 1px 0 var(--dim); }
+.terminal-entry:has(input:placeholder-shown)::after { content: '_'; position: absolute; top: 0; left: 0; line-height: 44px; color: var(--green); pointer-events: none; }
+.terminal-entry:has(input:placeholder-shown) input { caret-color: transparent; }
+.terminal form:focus-within label { color: var(--bright); text-shadow: 0 0 5px var(--glow); }
+.skills-list dt, .section-heading > span, .resume-entry h3, .resume-entry > .accent, .project-title { color: var(--bright); text-shadow: 0 0 5px var(--glow); }
+.section-heading h2 { text-shadow: 0 0 3px var(--glow), 0 0 12px var(--glow); }
+@media (prefers-reduced-motion: no-preference) { .terminal-entry:focus-within:has(input:placeholder-shown)::after { animation: blink 1.3s steps(1) infinite; } }
+@media (max-width: 600px) {
+  .terminal form { flex-wrap: wrap; gap: 0 8px; }
+  .terminal form label { flex-basis: 100%; font-size: 15px; }
+  .terminal-content > p { font-size: 13px; }
+}
+@media (prefers-contrast: more) {
+  .skills-list dt, .section-heading > span, .resume-entry h3, .resume-entry > .accent, .project-title, .section-heading h2, .terminal form:focus-within label { text-shadow: none; }
+}

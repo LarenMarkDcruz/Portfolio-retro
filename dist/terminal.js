@@ -180,7 +180,7 @@ function appendOutput({ output, line, message }) {
   entry.textContent = `$ ${line}\n${message}`;
   output.append(entry);
   while (output.children.length > MAXIMUM_HISTORY_ENTRIES) output.firstElementChild.remove();
-  output.scrollTop = ['help', '/help'].includes(line.toLowerCase()) ? entry.offsetTop - output.offsetTop : output.scrollHeight;
+  output.scrollTop = ['help', '/help'].includes(line.toLowerCase()) ? entry.offsetTop : output.scrollHeight;
 }
 
 /** Add command history and familiar keyboard shortcuts. @param {object} context @returns {void} */
@@ -202,12 +202,21 @@ function bindTerminalKeyboard(context) {
   });
 }
 
+/** Focus the prompt when visitors click unused terminal space. @param {HTMLInputElement} input @returns {void} */
+function bindTerminalClickFocus(input) {
+  document.querySelector('.terminal-content').addEventListener('click', event => {
+    if (event.target.closest('a, button, input') || !window.getSelection().isCollapsed) return;
+    input.focus({ preventScroll: true });
+  });
+}
+
 /** Initialize the website terminal with replaceable routing dependencies. @param {object} dependencies @returns {void} */
 export function initializeTerminal(dependencies) {
   const output = document.querySelector('#terminal-output');
   const input = document.querySelector('#terminal-input');
   const state = { history: [], historyIndex: 0, draft: '', preferences: restoreCustomAppearance() };
   bindTerminalKeyboard({ input, output, state, themes: dependencies.themes });
+  bindTerminalClickFocus(input);
   for (const selector of ['#theme', '#appearance']) document.querySelector(selector).addEventListener('change', () => resetCustomAppearance(state));
   document.querySelector('#terminal-form').addEventListener('submit', event => {
     event.preventDefault();

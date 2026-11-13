@@ -62,7 +62,7 @@ The résumé tab links to Google Docs; `open resume` opens the same document. Th
 
 ## Website terminal
 
-The command line starts expanded. Enter `/help` or `help` for the full website guide. This is a browser terminal for the portfolio, not an operating-system shell.
+The command line is always visible in a compact, borderless region at the bottom. Enter `/help` or `help` for the full website guide. This is a browser terminal for the portfolio, not an operating-system shell.
 
 | Purpose | Commands |
 | --- | --- |
@@ -72,7 +72,7 @@ The command line starts expanded. Enter `/help` or `help` for the full website g
 
 `cd resume` opens the résumé section; `open resume` opens the Google Doc in a new tab. Popup blockers may require using the page link instead. Arrow keys recall session history. Tab completes commands and arguments; Shift+Tab leaves the field. Ctrl+L clears output; Ctrl+C cancels input.
 
-The terminal stays in document flow at 28% of the viewport height, with a 180px minimum for small screens. Output scrolls independently while the `visitor-$` prompt stays visible. Use `/help` or `help` for commands. Custom background, foreground, and accent colors accept browser-supported CSS colors: names, hex, RGB, HSL, and other supported color functions. Visitors can choose any colors, including combinations with low contrast; `reset` restores the palette. The `font` command selects bundled Source Code Pro, browser families, or a locally installed font. Choosing a palette or display mode resets custom colors. Color and font settings persist locally; command history stays in the current session.
+The compact terminal stays at the bottom in document flow without a box. Output scrolls in a bounded area. The `visit:~/main.cpp $` prompt follows the active tab filename, including history navigation. Click unused terminal space to type; an underscore marks the empty prompt. Keyboard focus uses an underline instead of a dotted rectangle. Use `/help` or `help` for commands. Custom background, foreground, and accent colors accept browser-supported CSS colors: names, hex, RGB, HSL, and other supported color functions. Visitors can choose any colors, including combinations with low contrast; `reset` restores the palette. The `font` command selects bundled Source Code Pro, browser families, or a locally installed font. Choosing a palette or display mode resets custom colors. Color and font settings persist locally; command history stays in the current session.
 
 A brief section entrance and hover glows respect reduced-motion preferences. No photo is required for this text-first portfolio.
 
